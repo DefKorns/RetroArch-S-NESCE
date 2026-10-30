@@ -1,0 +1,25 @@
+## child snes9x2005 /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc --save-data-backing-file /saves/CLV-P-VAAAJ/data.sram
+## exit 0
+## log
+mount -t overlayfs overlay -o rw,lowerdir=/games/CLV-P-VAAAJ,upperdir=/saves/CLV-P-VAAAJ /games/CLV-P-VAAAJ
+umount /games/CLV-P-VAAAJ
+uistart 
+## retroarch
+retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/snes9x2005_libretro.so /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc 
+core-content: FAKE-CORE-snes9x2005
+rom-size: 3
+cfg-diff:
+overlay-diff:
+files:
+## watchdog
+watchdog --pid PID
+## fbgrab
+## after
+cfg-diff:
+overlay-diff:
+files:
+  D /games/CLV-P-VAAAJ
+  F /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc (3 bytes) ...
+  D /saves/CLV-P-VAAAJ
+  D /saves/CLV-P-VAAAJ/ra_states
+  F /saves/CLV-P-VAAAJ/ra_states/CLV-P-VAAAJ.state1.gz (27 bytes) ........................

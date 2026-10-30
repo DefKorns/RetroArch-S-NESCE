@@ -1,0 +1,31 @@
+## child mame2003 /games/CLV-Z-MAME/game.zip --save-data-backing-file /saves/CLV-Z-MAME/data.sram
+## exit 0
+## log
+mount -t overlayfs overlay -o rw,lowerdir=/games/CLV-Z-MAME,upperdir=/saves/CLV-Z-MAME /games/CLV-Z-MAME
+mount_bind /etc/libretro/system/neogeo_old.zip /games/CLV-Z-MAME/neogeo.zip
+umount /games/CLV-Z-MAME/neogeo.zip
+umount /games/CLV-Z-MAME
+uistart 
+## retroarch
+retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/mame2003_libretro.so /games/CLV-Z-MAME/game.zip 
+core-content: FAKE-CORE-mame2003
+rom-size: 3
+cfg-diff:
+overlay-diff:
+files:
+  F /var/cache/retroarch/mame2003
+  F /var/cache/retroarch/mame2003/nv
+## watchdog
+watchdog --pid PID
+## fbgrab
+## after
+cfg-diff:
+overlay-diff:
+files:
+  D /games/CLV-Z-MAME
+  F /games/CLV-Z-MAME/game.zip (3 bytes) ...
+  F /games/CLV-Z-MAME/neogeo.zip (0 bytes) 
+  D /saves/CLV-Z-MAME
+  D /saves/CLV-Z-MAME/mame2003
+  F /saves/CLV-Z-MAME/mame2003/nv (2 bytes) ..
+  D /saves/CLV-Z-MAME/ra_states

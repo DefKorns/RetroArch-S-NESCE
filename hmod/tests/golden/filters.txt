@@ -1,0 +1,41 @@
+## child snes9x2005 /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc --enable-scanlines --smooth43
+## exit 0
+## log
+uistart 
+## retroarch
+retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/snes9x2005_libretro.so /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc 
+core-content: FAKE-CORE-snes9x2005
+rom-size: 3
+cfg-diff:
+--- /tmp/cfg_orig
++++ /etc/libretro/retroarch.cfg
+@@ -182,7 +182,7 @@
+ video_windowed_fullscreen = "true"
+ video_crop_overscan = "false"
+ video_scale_integer = "false"
+-video_smooth = "false"
++video_smooth = "true"
+ video_force_aspect = "true"
+ video_threaded = "false"
+ video_shared_context = "false"
+@@ -1579,7 +1579,7 @@
+ core_options_path = ""
+ video_shader = ""
+ menu_wallpaper = "~/wallpapers/retrocat/retrocat_04.png"
+-input_overlay = "~/overlay/scanlines.cfg"
++input_overlay = "~/overlay/border_with_scanlines.cfg"
+ video_font_path = ""
+ content_history_dir = ""
+ resampler_directory = ""
+overlay-diff:
+files:
+  F /var/cache/retroarch/current
+## watchdog
+watchdog --pid PID
+## fbgrab
+## after
+cfg-diff:
+overlay-diff:
+files:
+  D /games/CLV-P-VAAAJ
+  F /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc (3 bytes) ...

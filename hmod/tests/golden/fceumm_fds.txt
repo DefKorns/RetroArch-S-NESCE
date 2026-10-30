@@ -1,0 +1,27 @@
+## child fceumm /games/CLV-P-HAAAJ/game.fds --save-data-backing-file /saves/CLV-P-HAAAJ/data.sram
+## exit 0
+## log
+mount -t overlayfs overlay -o rw,lowerdir=/games/CLV-P-HAAAJ,upperdir=/saves/CLV-P-HAAAJ /games/CLV-P-HAAAJ
+umount /games/CLV-P-HAAAJ
+uistart 
+## retroarch
+retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/fceumm_libretro.so /games/CLV-P-HAAAJ/game.fds 
+core-content: FAKE-CORE-fceumm
+rom-size: 3
+cfg-diff:
+overlay-diff:
+files:
+  F /var/cache/retroarch/game.sav
+  L /var/cache/retroarch/game.srm -> /var/cache/retroarch/game.sav
+## watchdog
+watchdog --pid PID
+## fbgrab
+## after
+cfg-diff:
+overlay-diff:
+files:
+  D /games/CLV-P-HAAAJ
+  F /games/CLV-P-HAAAJ/game.fds (3 bytes) ...
+  D /saves/CLV-P-HAAAJ
+  F /saves/CLV-P-HAAAJ/data.sram (8 bytes) .....r..
+  D /saves/CLV-P-HAAAJ/ra_states

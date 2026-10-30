@@ -1,0 +1,31 @@
+## child snes9x2005 /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc --title-code CLV-P-VAAAJ --save-data-backing-file /saves/CLV-P-VAAAJ/data.sram --save-on-quit /saves/CLV-P-VAAAJ/out/suspend --load-state-file /saves/CLV-P-VAAAJ/suspend
+## exit 0
+## log
+mount -t overlayfs overlay -o rw,lowerdir=/games/CLV-P-VAAAJ,upperdir=/saves/CLV-P-VAAAJ /games/CLV-P-VAAAJ
+umount /games/CLV-P-VAAAJ
+uistart 
+## retroarch
+retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/snes9x2005_libretro.so /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc 
+core-content: FAKE-CORE-snes9x2005
+rom-size: 3
+cfg-diff:
+overlay-diff:
+files:
+  F /var/cache/retroarch/CLV-P-VAAAJ.srm
+  F /var/cache/retroarch/CLV-P-VAAAJ.state.auto
+## watchdog
+watchdog --pid PID
+## fbgrab
+## after
+cfg-diff:
+overlay-diff:
+files:
+  D /games/CLV-P-VAAAJ
+  F /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc (3 bytes) ...
+  D /saves/CLV-P-VAAAJ
+  F /saves/CLV-P-VAAAJ/data.sram (9 bytes) n....r...
+  D /saves/CLV-P-VAAAJ/out
+  F /saves/CLV-P-VAAAJ/out/suspend (26 bytes) ........................
+  F /saves/CLV-P-VAAAJ/out/suspend_time.txt (2 bytes) ..
+  D /saves/CLV-P-VAAAJ/ra_states
+  F /saves/CLV-P-VAAAJ/suspend (6 bytes) .t.t..

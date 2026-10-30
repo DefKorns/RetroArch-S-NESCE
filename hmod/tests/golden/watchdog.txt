@@ -1,0 +1,21 @@
+## child snes9x2005 /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc
+## exit 0
+## log
+uistart 
+## retroarch
+retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/snes9x2005_libretro.so /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc 
+core-content: FAKE-CORE-snes9x2005
+rom-size: 3
+cfg-diff:
+overlay-diff:
+files:
+retroarch terminated
+## watchdog
+watchdog --pid PID
+## fbgrab
+## after
+cfg-diff:
+overlay-diff:
+files:
+  D /games/CLV-P-VAAAJ
+  F /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc (3 bytes) ...

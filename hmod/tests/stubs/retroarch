@@ -1,0 +1,46 @@
+#!/bin/sh
+#  Copyright (C) 2026 DefKorns (https://defkorns.github.io/LICENSE)
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# Stand-in for retroarch: records what retroarch-clover-child hands it.
+# RA_WRITE_AUTOSAVE / RA_WRITE_SRAM / RA_WRITE_STATE make it leave a suspend point, a save or a state behind, RA_SLEEP keeps it running.
+log=/tmp/log.retroarch
+[ -n "$RA_SLEEP" ] && trap 'echo "retroarch terminated" >> "$log"; exit 0' TERM
+core="$4"
+rom="$5"
+base="$(basename "$rom")"
+
+{
+  echo "retroarch $*"
+  echo "core-content: $(head -c 40 "$core" 2> /dev/null)"
+  echo "rom-size: $(wc -c < "$rom" 2> /dev/null)"
+  echo "cfg-diff:"
+  diff /tmp/cfg_orig /etc/libretro/retroarch.cfg
+  echo "overlay-diff:"
+  diff -r /tmp/overlay_orig /etc/libretro/overlay
+  echo "files:"
+  find /var/cache/retroarch /tmp/rom -mindepth 1 2> /dev/null | sort | while read -r f; do
+    if [ -L "$f" ]; then echo "  L $f -> $(readlink "$f")"; else echo "  F $f"; fi
+  done
+} >> "$log" 2>&1
+
+[ -n "$RA_WRITE_AUTOSAVE" ] && echo state > "/var/cache/retroarch/${base%.*}.state.auto"
+[ -n "$RA_WRITE_SRAM" ] && echo new-sram > "/var/cache/retroarch/${base%.*}.srm"
+[ -n "$RA_WRITE_STATE" ] && echo state1 > "/var/cache/retroarch/${base%.*}.state1"
+if [ -n "$RA_SLEEP" ]; then
+  sleep "$RA_SLEEP" &
+  wait $!
+fi
+exit 0

@@ -1,0 +1,23 @@
+## child snes9x2005 /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc --save-screenshot-on-quit /saves/CLV-P-VAAAJ/shot.png
+## exit 0
+## log
+uistart 
+## retroarch
+retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/snes9x2005_libretro.so /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc 
+core-content: FAKE-CORE-snes9x2005
+rom-size: 3
+cfg-diff:
+overlay-diff:
+files:
+## watchdog
+watchdog --pid PID
+## fbgrab
+fbgrab -z 5 /saves/CLV-P-VAAAJ/shot.png
+## after
+cfg-diff:
+overlay-diff:
+files:
+  D /games/CLV-P-VAAAJ
+  F /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc (3 bytes) ...
+  D /saves/CLV-P-VAAAJ
+  F /saves/CLV-P-VAAAJ/shot.png (0 bytes) 

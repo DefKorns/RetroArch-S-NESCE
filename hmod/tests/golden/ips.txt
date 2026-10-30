@@ -1,0 +1,21 @@
+## child snes9x2005 /tmp/rom/rom.sfc --title-code CLV-P-VAAAJ
+## exit 0
+## log
+uistart 
+## retroarch
+retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/snes9x2005_libretro.so /tmp/rom/rom.sfc 
+core-content: FAKE-CORE-snes9x2005
+rom-size: 3
+cfg-diff:
+overlay-diff:
+files:
+  F /tmp/rom/rom.bps
+  F /tmp/rom/rom.ips
+  F /tmp/rom/rom.sfc
+## watchdog
+watchdog --pid PID
+## fbgrab
+## after
+cfg-diff:
+overlay-diff:
+files:
