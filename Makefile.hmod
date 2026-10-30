@@ -1,0 +1,31 @@
+MOD_ID       := retroarch_snesce
+MOD_NAME     := RetroArch (S)NESCE
+MOD_CATEGORY := Emulators
+MOD_DIR      := hmod/mod
+LIBRETRO_DIR := hmod/mod/etc/libretro
+MOD_DEPS     := hmod/mod/bin/retroarch hmod/mod/bin/fbgrab hmod/mod/bin/retroarch_watchdog $(LIBRETRO_DIR)/assets/ozone/regular.ttf $(LIBRETRO_DIR)/joypad_autoconf/udev/Sony-PlayStation3-DualShock3-Controller.cfg
+
+all: hmod
+
+hmod/mod/bin/retroarch:
+	sh hmod/build_retroarch.sh $@
+
+hmod/mod/bin/fbgrab:
+	sh hmod/build_fbgrab.sh $@
+
+$(LIBRETRO_DIR)/assets/ozone/regular.ttf:
+	sh hmod/fetch_assets.sh $(LIBRETRO_DIR)
+
+$(LIBRETRO_DIR)/joypad_autoconf/udev/Sony-PlayStation3-DualShock3-Controller.cfg: $(LIBRETRO_DIR)/assets/ozone/regular.ttf
+
+hmod/mod/bin/retroarch_watchdog: hmod/src/retroarch_watchdog.c
+	$(CROSS_PREFIX)gcc -std=gnu99 -O2 -Wall -o $@ $<
+	$(CROSS_PREFIX)strip $@
+
+clean:
+	rm -rf out/ hmod/mod/bin/retroarch hmod/mod/bin/fbgrab hmod/mod/bin/retroarch_watchdog $(LIBRETRO_DIR)/assets $(LIBRETRO_DIR)/joypad_autoconf
+	$(MAKE) -f Makefile clean
+
+include vendor/hmod-build/hmod.mk
+
+.PHONY: all clean

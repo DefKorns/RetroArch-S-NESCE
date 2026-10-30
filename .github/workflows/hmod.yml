@@ -1,0 +1,23 @@
+name: hmod
+
+on:
+  push:
+    tags: ['v*']
+  pull_request:
+    paths:
+      - Makefile.hmod
+      - hmod/**
+      - .github/workflows/hmod.yml
+  workflow_dispatch:
+
+jobs:
+  hmod:
+    # Keep in sync with the vendor/hmod-build submodule tag.
+    uses: DefKorns/hmod-build/.github/workflows/hmod.yml@v1.6.0
+    with:
+      release-name: RetroArch (S)NESCE
+      make: -f Makefile.hmod hmod
+      docker: true
+    secrets: inherit
+    permissions:
+      contents: write
