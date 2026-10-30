@@ -22,6 +22,8 @@ Add `--retroarch` to a game's command line in Hakchi, and `--core <name>` to pic
 
 On the console, hold **Down** while launching a game to force RetroArch, or **Up** to force the original emulator. In a game, **Select + Start** opens the RetroArch menu.
 
+SNES games from the console's own library come as `.sfrom` containers, which RetroArch cannot read: `retroarch-clover-child` extracts the ROM to `/tmp/rom` first, as `<game>.sfrom.sfc`, so the translation patches of [om_game-translations](https://github.com/DefKorns/om_game-translations) still find it. `/bin/snes` runs a game with Snes9x 2005.
+
 Each core hmod also adds a `/bin` shortcut (`snes05`, `snes10`, `fceumm`, `nestopia`, `quicknes`) that can be used as a game's executable.
 
 ## What is included

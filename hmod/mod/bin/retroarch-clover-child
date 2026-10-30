@@ -8,12 +8,23 @@ sys_folder="$HOME/system"
 corename="$1"
 noprefix="${corename#km_}"
 core="$HOME/core/${1}_libretro.so"
+tmppath="/tmp/rom"
 rom="$2"
+
+# The console's own SNES games are .sfrom containers: extract the ROM where the launchers expect it
+if [ "${rom##*.}" = "sfrom" ]; then
+  mkdir -p "$tmppath"
+  sfrom_start="$(hexdump -e '1/4 "%u"' -s8 -n4 "$rom")"
+  sfrom_footer="$(hexdump -e '1/4 "%u"' -s20 -n4 "$rom")"
+  sfrom_size="$(hexdump -e '1/4 "%u"' -s$((sfrom_footer + 1)) -n4 "$rom")"
+  sfrom_rom="$tmppath/$(basename "$rom").sfc"
+  dd status=none if="$rom" iflag=skip_bytes skip="$sfrom_start" bs="$sfrom_size" count=1 > "$sfrom_rom" && rom="$sfrom_rom"
+fi
+
 game_path="$(dirname "$rom")"
 filename="$(basename "$rom")"
 id="${filename%.*}"
 extension="${filename##*.}"
-tmppath="/tmp/rom"
 rcache="/var/cache/retroarch"
 if xz -t "$core" 2> /dev/null; then
   mkdir -p "$rcache"

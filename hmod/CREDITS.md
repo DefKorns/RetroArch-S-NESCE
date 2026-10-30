@@ -8,6 +8,6 @@ The clover integration in `hmod/mod` (the `retroarch-clover*` and `retroarch-min
 - [Classicmods / ModMyClassic](https://github.com/Classicmods/RA_Platform-Hakchi): the RetroArch platform for the NES and SNES Classic (2018-2019).
 - KMFDManic, madmonkey, bslenul and DanTheMan827: the RetroArch 1.9.10 Ozone hmod (2021-2022), which extended the scripts with bezels, overclocking, shared saves and the configuration this hmod starts from.
 
-`retroarch_watchdog` is a rewrite in `hmod/src`, written against the output of the original binary that came with the 1.9.10 hmod. `fbgrab` is built from [GunnarMonell/fbgrab](https://github.com/GunnarMonell/fbgrab) (GPL-2.0).
+The extraction of the `.sfrom` games in `retroarch-clover-child` reads the offsets the same way as the `/bin/snes` script of the 1.9.10 hmod. `retroarch_watchdog` is a rewrite in `hmod/src`, written against the output of the original binary that came with the 1.9.10 hmod. `fbgrab` is built from [GunnarMonell/fbgrab](https://github.com/GunnarMonell/fbgrab) (GPL-2.0).
 
 I could not tell which of the last group wrote which lines, because the scripts carry no author headers. If a line here is yours and the credit is wrong, tell me and I will fix it.
