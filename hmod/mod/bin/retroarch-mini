@@ -19,14 +19,11 @@ mkdir -p "$rcache"
 
 [ -f "$HOME/retroarch.cfg" ] || cp "$HOME/config/retroarch_default.cfg" "$HOME/retroarch.cfg"
 
-racfg(){
-  local name="$1"
-  local target="$2"
-  sed -i "s|^${name%% *} .*|$name|" "$target"
+autoSaves(){
+  sed -i "s|^savestate_auto_load .*|savestate_auto_load = \"$1\"|; s|^savestate_auto_save .*|savestate_auto_save = \"$1\"|" "$HOME/retroarch.cfg"
 }
 
-racfg "savestate_auto_load = \"false\"" "$HOME/retroarch.cfg"
-racfg "savestate_auto_save = \"false\"" "$HOME/retroarch.cfg"
+autoSaves false
 
 if [ "$1" = "null" ]; then
   retroarch -c "$HOME/retroarch.cfg" -vf &
@@ -39,13 +36,13 @@ rpid="$!"
 
 if [ -n "$rexec_ok" ]; then
   retroarch_watchdog --pid "$rpid" | while read -r _ button value _; do
-    { { [ "$button" = "home" ] || [ "$button" = "reset" ]; } && [ "$value" = "1" ]; } || \
-    { [ "$button" = "power" ] && [ "$value" = "0" ]; } && kill "$rpid"
+    case "$button $value" in
+      "home 1"|"reset 1"|"power 0") kill "$rpid" ;;
+    esac
   done
 fi
 
-racfg "savestate_auto_load = \"true\"" "$HOME/retroarch.cfg"
-racfg "savestate_auto_save = \"true\"" "$HOME/retroarch.cfg"
+autoSaves true
 
 wait "$rpid"
 rm -rf "$rcache"

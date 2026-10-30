@@ -35,38 +35,49 @@ autosave="$rcache/$id.state.auto"
 usb_states="/media/$modname/retroarch/states"
 rsram="$rcache/$id.srm"
 t_suffix="_time.txt"
-clovercon_file="/dev/clovercon1"
 shift 2
 
 while [ $# -gt 0 ]; do
-  [ "$1" = "--load-state-file" ] && load="$2"
-  [ "$1" = "--save-on-quit" ] && save="$2"
-  [ "$1" = "--rollback-input-dir" ] && load="$2/savestate"
-  [ "$1" = "--rollback-output-dir" ] && save="$2/savestate"
-  [ "$1" = "--save-screenshot-on-quit" ] && screenshot="$2"
-  [ "$1" = "--save-data-backing-file" ] && sram="$2" && sram_folder="$(dirname "$sram")"
-  [ "$1" = "--shared-save" ] && shared_save="$2"
-  [ "$1" = "--graphic-filter" ] && filter="$2"
-  [ "$1" = "--video-mode" ] && [ "$2" = "crt-filter" ] && filter="crt720"
-  [ "$1" = "--video-mode" ] && [ "$2" = "keep-aspect-ratio" ] && filter="gpu720"
-  [ "$1" = "--video-mode" ] && [ "$2" = "pixel-perfect" ] && filter="ppu"
-  { [ "$1" = "--enable-smooth" ] || [ "$1" = "--smooth43" ]; } && smooth43="1"
-  [ "$1" = "--no-smooth" ] && no_smooth="1"
-  [ "$1" = "--enable-scanlines" ] && crt="1"
-  [ "$1" = "--no-scanlines" ] && no_scanlines="1"
-  [ "$1" = "--crt-mode" ] && smooth43="1" && crt="1"
-  [ "$1" = "--bezel-mode" ] && bezel_mode="1"
-  [ "$1" = "--title-code" ] && title_code="$2"
-  [ "$1" = "--ra-extra" ] && extra="$2"
-  [ "$1" = "--ra-nosaves" ] && nosaves="1"
-  [ "$1" = "--load-time-path" ] && timefile_load="$2"
-  [ "$1" = "--save-time-path" ] && timefile_save="$2"
-  [ "$1" = "--replay-inputs" ] && demo="1"
-  [ "$1" = "--decorative-frame-path" ] && frame="$2"
-  [ "$1" = "--debug-usb" ] && debug="/media/$modname"
-  [ "$1" = "--debug-nand" ] && debug="/tmp"
-  [ "$1" = "--nand-states" ] && [ ! -d "$usb_states" ] && nand_states="1"
-  [ "$1" = "--overclock" ] && overclock="1"
+  case "$1" in
+    --load-state-file) load="$2" ;;
+    --save-on-quit) save="$2" ;;
+    --rollback-input-dir) load="$2/savestate" ;;
+    --rollback-output-dir) save="$2/savestate" ;;
+    --save-screenshot-on-quit) screenshot="$2" ;;
+    --save-data-backing-file)
+      sram="$2"
+      sram_folder="$(dirname "$sram")"
+      ;;
+    --shared-save) shared_save="$2" ;;
+    --graphic-filter) filter="$2" ;;
+    --video-mode)
+      case "$2" in
+        crt-filter) filter="crt720" ;;
+        keep-aspect-ratio) filter="gpu720" ;;
+        pixel-perfect) filter="ppu" ;;
+      esac
+      ;;
+    --enable-smooth|--smooth43) smooth43="1" ;;
+    --no-smooth) no_smooth="1" ;;
+    --enable-scanlines) crt="1" ;;
+    --no-scanlines) no_scanlines="1" ;;
+    --crt-mode)
+      smooth43="1"
+      crt="1"
+      ;;
+    --bezel-mode) bezel_mode="1" ;;
+    --title-code) title_code="$2" ;;
+    --ra-extra) extra="$2" ;;
+    --ra-nosaves) nosaves="1" ;;
+    --load-time-path) timefile_load="$2" ;;
+    --save-time-path) timefile_save="$2" ;;
+    --replay-inputs) demo="1" ;;
+    --decorative-frame-path) frame="$2" ;;
+    --debug-usb) debug="/media/$modname" ;;
+    --debug-nand) debug="/tmp" ;;
+    --nand-states) force_nand="1" ;;
+    --overclock) overclock="1" ;;
+  esac
   shift
 done
 
@@ -80,7 +91,8 @@ desktop_file="$gamepath/$title_code/$title_code.desktop"
 
 # Toggle bezel-mode with L/R
 # Hold L button while starting a game to toggle bezel-mode for this game, it simply adds/removes "--bezel-mode" in .desktop file
-if [ -e "$clovercon_file" ] && [ "$(cat "$clovercon_file")" = "0004" ]; then
+pad="$(cat /dev/clovercon1 2> /dev/null)"
+if [ "$pad" = "0004" ]; then
   if [ -z "$bezel_mode" ]; then
     sed -i "s/^Exec.*/& --bezel-mode/" "$desktop_file" && bezel_mode="1"
   else
@@ -88,15 +100,15 @@ if [ -e "$clovercon_file" ] && [ "$(cat "$clovercon_file")" = "0004" ]; then
   fi
 fi
 # Hold R button while starting a game to toggle bezel-mode for this core, adds/removes name of the core in /etc/libretro/bezel-core
-if [ -e "$clovercon_file" ] && [ "$(cat "$clovercon_file")" = "0008" ]; then
+if [ "$pad" = "0008" ]; then
   [ ! -f "$HOME/bezel-core" ] && touch "$HOME/bezel-core"
-  if grep -w "$noprefix" "$HOME/bezel-core"; then
+  if grep -qw "$noprefix" "$HOME/bezel-core"; then
     sed -i "/^$noprefix$/d" "$HOME/bezel-core"
   else
     echo "$noprefix" >> "$HOME/bezel-core"
   fi
 fi
-[ -f "$HOME/bezel-core" ] && grep -w "$noprefix" "$HOME/bezel-core" && bezel_mode="1"
+[ -f "$HOME/bezel-core" ] && grep -qw "$noprefix" "$HOME/bezel-core" && bezel_mode="1"
 
 # Check if Neo-Geo bios and game folder arent already mounted
 grep -q "$game_path/neogeo.zip" /proc/mounts && umount "$game_path/neogeo.zip"
@@ -104,7 +116,7 @@ grep -q "$game_path " /proc/mounts && umount "$game_path"
 
 # IPS patch for roms extracted to /tmp/rom
 if [ "$game_path" = "$tmppath" ]; then
-  true_game_path="$(grep -Eo -m 1 "\S+\/$title_code" "$desktop_file")"
+  true_game_path="$(dirname "$(sed -n 's/.* -rom \([^ ]*\).*/\1/p' "$desktop_file" | head -n 1)")"
   for i in bps ups ips; do
     find "$true_game_path" -maxdepth 1 -iname "*.$i" -exec cp -f {} "$game_path/$id.$i" \;
   done
@@ -121,6 +133,8 @@ fi
 [ -n "$sram" ] && mkdir -p "$sram_folder"
 [ -n "$screenshot" ] && mkdir -p "$(dirname "$screenshot")"
 [ "$cfg_ra_write_test" = "y" ] && mkdir -p "$usb_states"
+# States go to the SD card when it is writable, unless the game forces the NAND with "--nand-states"
+[ "$cfg_ra_write_test" = "y" ] && [ -z "$force_nand" ] || nand_states="1"
 mkdir -p "$rcache"
 
 # Moving suspend point to RA cache folder
@@ -133,9 +147,9 @@ if [ -n "$load" ] && [ -f "$load" ] && [ -z "$nosaves" ]; then
   fi
 fi
 
-# Moving and extracting states to RA cache folder if "--nand-states" is in command line, symlinking existing states on USB
+# Symlinking the states on the SD card, or extracting the ones on the NAND, to the RA cache folder
 if [ -z "$nand_states" ]; then
-  if [ "$cfg_ra_write_test" = "y" ] && [ -d "$usb_states" ] && [ -n "$sram" ]; then
+  if [ -n "$sram" ]; then
     find "$usb_states" -maxdepth 1 -type f -name "$id.state*" -exec ln -s {} "$rcache" \;
   fi
 elif [ -n "$sram" ]; then
@@ -177,8 +191,9 @@ cp_adds(){
 chk_ext(){
   # Simply check extension of the file, or extension of "$id" in case its a .7z file for example
   for i; do
-    [ "$extension" = "$i" ] || [ "${id##*.}" = "$i" ] && break
-  done || return 1
+    if [ "$extension" = "$i" ] || [ "${id##*.}" = "$i" ]; then return 0; fi
+  done
+  return 1
 }
 
 ngbios(){
@@ -186,9 +201,9 @@ ngbios(){
   rm -f "$sram_folder/neogeo.zip"
   [ -L "$game_path/neogeo.zip" ] && rm "$game_path/neogeo.zip"
   [ -s "$game_path/neogeo.zip" ] && return 0
-  [ -f "$sys_folder/neogeo.zip" ] && ngbios="$sys_folder/neogeo.zip"
-  [ "$1" = "-old" ] && [ -f "$sys_folder/neogeo_old.zip" ] && ngbios="$sys_folder/neogeo_old.zip"
-  [ -n "$ngbios" ] && touch "$game_path/neogeo.zip" && mount_bind "$ngbios" "$game_path/neogeo.zip"
+  [ -f "$sys_folder/neogeo.zip" ] && neogeo_bios="$sys_folder/neogeo.zip"
+  [ "$1" = "-old" ] && [ -f "$sys_folder/neogeo_old.zip" ] && neogeo_bios="$sys_folder/neogeo_old.zip"
+  [ -n "$neogeo_bios" ] && touch "$game_path/neogeo.zip" && mount_bind "$neogeo_bios" "$game_path/neogeo.zip"
 }
 
 # Copying saves to RA cache folder, case part is for exceptions
@@ -241,29 +256,30 @@ if [ -n "$nosaves" ]; then
 fi
 
 # Modifying overlays .cfg files to point to current border
-grep -q "\"$frame.png\"" "$HOME/overlay/border.cfg" || racfg "overlay0_overlay = \"$frame.png\"" "$HOME/overlay/border.cfg"
-grep -q "\"$frame.png\"" "$HOME/overlay/border_with_scanlines.cfg" || racfg "overlay0_desc0_overlay = \"$frame.png\"" "$HOME/overlay/border_with_scanlines.cfg"
+[ -n "$frame" ] && ! grep -q "\"$frame.png\"" "$HOME/overlay/border.cfg" && racfg "overlay0_overlay = \"$frame.png\"" "$HOME/overlay/border.cfg"
+[ -n "$frame" ] && ! grep -q "\"$frame.png\"" "$HOME/overlay/border_with_scanlines.cfg" && racfg "overlay0_desc0_overlay = \"$frame.png\"" "$HOME/overlay/border_with_scanlines.cfg"
+
+# Enabling/disabling scanlines and bilinear if specified, $1 is the file where the replaced lines are kept
+applyDisplay(){
+  [ -n "$no_scanlines" ] && racfg "input_overlay = \"~/overlay/border.cfg\"" "$HOME/retroarch.cfg" "$1"
+  [ -n "$crt" ] && racfg "input_overlay = \"~/overlay/border_with_scanlines.cfg\"" "$HOME/retroarch.cfg" "$1"
+  [ -n "$smooth43" ] && racfg "video_smooth = \"true\"" "$HOME/retroarch.cfg" "$1"
+  [ -n "$no_smooth" ] && racfg "video_smooth = \"false\"" "$HOME/retroarch.cfg" "$1"
+}
 
 # Modifying retroarch.cfg depending on filters and bezel-mode
 if [ -n "$bezel_mode" ]; then
   while read -r line; do
     racfg "$line" "$HOME/retroarch.cfg" "$rcache/current"
   done < "$HOME/$filter"
-  # Enabling/disabling scanlines and bilinear if specified
-  [ -n "$no_scanlines" ] && racfg "input_overlay = \"~/overlay/border.cfg\"" "$HOME/retroarch.cfg"
-  [ -n "$crt" ] && racfg "input_overlay = \"~/overlay/border_with_scanlines.cfg\"" "$HOME/retroarch.cfg"
-  [ -n "$smooth43" ] && racfg "video_smooth = \"true\"" "$HOME/retroarch.cfg"
-  [ -n "$no_smooth" ] && racfg "video_smooth = \"false\"" "$HOME/retroarch.cfg"
+  applyDisplay ""
 elif [ "$filter" = "crt720" ]; then
   # Apply bilinear and scanlines if CRT mode is selected
   racfg "video_smooth = \"true\"" "$HOME/retroarch.cfg" "$rcache/current"
   racfg "input_overlay = \"~/overlay/scanlines.cfg\"" "$HOME/retroarch.cfg" "$rcache/current"
   racfg "input_overlay_enable = \"true\"" "$HOME/retroarch.cfg" "$rcache/current"
 else
-  [ -n "$no_scanlines" ] && racfg "input_overlay = \"~/overlay/border.cfg\"" "$HOME/retroarch.cfg" "$rcache/current"
-  [ -n "$crt" ] && racfg "input_overlay = \"~/overlay/border_with_scanlines.cfg\"" "$HOME/retroarch.cfg" "$rcache/current"
-  [ -n "$smooth43" ] && racfg "video_smooth = \"true\"" "$HOME/retroarch.cfg" "$rcache/current"
-  [ -n "$no_smooth" ] && racfg "video_smooth = \"false\"" "$HOME/retroarch.cfg" "$rcache/current"
+  applyDisplay "$rcache/current"
 fi
 
 # Overclock if "--overclock" is set and downclock on exit, unless a manual OC was already applied
@@ -295,16 +311,18 @@ rpid="$!"
 # Starting watchdog
 if [ -z "$demo" ]; then
   retroarch_watchdog --pid "$rpid" | while read -r _ button value _; do
-    { { [ "$button" = "home" ] || [ "$button" = "reset" ]; } && [ "$value" = "1" ]; } || \
-    { [ "$button" = "power" ] && [ "$value" = "0" ]; } && kill "$rpid"
+    case "$button $value" in
+      "home 1"|"reset 1"|"power 0") kill "$rpid" ;;
+    esac
   done
 else
   # If in demo mode, quit on any button press or after 30 seconds
   { sleep 30 && kill "$rpid"; } &
   sleep_pid="$(pgrep -P "$!")"
   retroarch_watchdog --any --pid "$rpid" | while read -r _ button value _; do
-    { { [ "$button" = "any" ] || [ "$button" = "reset" ]; } && [ "$value" = "1" ]; } || \
-    { [ "$button" = "power" ] && [ "$value" = "0" ]; } && kill -9 "$sleep_pid" && kill "$rpid"
+    case "$button $value" in
+      "any 1"|"reset 1"|"power 0") kill -9 "$sleep_pid" && kill "$rpid" ;;
+    esac
   done
 fi
 
@@ -323,9 +341,9 @@ if [ -n "$save" ] && [ -f "$autosave" ] && [ -z "$nosaves" ]; then
   echo "$tm" > "$timefile_save"
 fi
 
-# Moving new states to /media/$modname/retroarch/states or gzipping and moving to /var/saves if "--nand-states" was in command line
+# Moving new states to /media/$modname/retroarch/states, or gzipping them to the game saves if the NAND is used
 if [ -z "$nand_states" ]; then
-  [ "$cfg_ra_write_test" = "y" ] && [ -d "$usb_states" ] && find "$rcache" -maxdepth 1 -type f -regex ".*$id.state[0-9]*" -exec mv -f {} "$usb_states" \;
+  find "$rcache" -maxdepth 1 -type f -regex ".*$id.state[0-9]*" -exec mv -f {} "$usb_states" \;
 else
   if [ -n "$sram" ]; then
     find "$rcache" -maxdepth 1 -type f -regex ".*$id.state[0-9]*" | while read -r line; do
@@ -359,7 +377,7 @@ fi
 
 # Cleanup
 [ -n "$sshot_pid" ] && wait "$sshot_pid"
-[ -n "$ngbios" ] && umount "$game_path/neogeo.zip"
+[ -n "$neogeo_bios" ] && umount "$game_path/neogeo.zip"
 [ -n "$sram" ] && umount "$game_path"
 [ -n "$overclock" ] && overclock stop
 rm -rf "$tmppath"
