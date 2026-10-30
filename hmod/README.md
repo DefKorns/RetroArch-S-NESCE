@@ -45,7 +45,7 @@ These numbers come from one console, two cores (Snes9x 2005 and 2010) and one ga
 
 ## Known limitations
 
-- **No online updater yet.** `retroarch.cfg` does not point the core updater at the cores repository, and the build has no TLS, which GitHub Pages needs. Cores install as hmods.
+- **Cores from the online updater are not tracked by Hakchi.** `retroarch.cfg` points the core updater at the [cores repository](https://github.com/DefKorns/retroarch-snesce-cores) and the build has TLS, but a core downloaded from the RetroArch menu is not an hmod, so Hakchi cannot update or remove it. Install cores as hmods if you want Hakchi to manage them. The online updater itself is not tested on a console yet.
 - The `install` script and the clover scripts come from the 1.9.10 hmod and are only lightly changed.
 
 ## Build
