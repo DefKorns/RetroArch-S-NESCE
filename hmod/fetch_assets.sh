@@ -28,3 +28,5 @@ curl -fsSL "https://codeload.github.com/libretro/retroarch-assets/tar.gz/$assets
 rm -rf "$dest/assets/src"
 curl -fsSL "https://codeload.github.com/libretro/retroarch-joypad-autoconfig/tar.gz/$autoconfig_ref" \
   | tar -xz --strip-components=1 -C "$dest/joypad_autoconf" --wildcards '*/udev'
+# some upstream profiles use CRLF, which hmod-check rejects
+find "$dest/joypad_autoconf" -name '*.cfg' -exec sed -i 's/\r$//' {} +

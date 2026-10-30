@@ -3,7 +3,7 @@ MOD_NAME     := RetroArch (S)NESCE
 MOD_CATEGORY := Emulators
 MOD_DIR      := hmod/mod
 LIBRETRO_DIR := hmod/mod/etc/libretro
-MOD_DEPS     := hmod/mod/bin/retroarch hmod/mod/bin/fbgrab hmod/mod/bin/retroarch_watchdog $(LIBRETRO_DIR)/assets/ozone/regular.ttf $(LIBRETRO_DIR)/joypad_autoconf/udev/Sony-PlayStation3-DualShock3-Controller.cfg
+MOD_DEPS     := hmod/mod/bin/retroarch hmod/mod/bin/fbgrab hmod/mod/bin/retroarch_watchdog $(LIBRETRO_DIR)/assets/ozone/regular.ttf $(LIBRETRO_DIR)/joypad_autoconf/udev/Sony-PlayStation3-DualShock3-Controller-USB.cfg
 
 all: hmod
 
@@ -16,7 +16,7 @@ hmod/mod/bin/fbgrab:
 $(LIBRETRO_DIR)/assets/ozone/regular.ttf:
 	sh hmod/fetch_assets.sh $(LIBRETRO_DIR)
 
-$(LIBRETRO_DIR)/joypad_autoconf/udev/Sony-PlayStation3-DualShock3-Controller.cfg: $(LIBRETRO_DIR)/assets/ozone/regular.ttf
+$(LIBRETRO_DIR)/joypad_autoconf/udev/Sony-PlayStation3-DualShock3-Controller-USB.cfg: $(LIBRETRO_DIR)/assets/ozone/regular.ttf
 
 hmod/mod/bin/retroarch_watchdog: hmod/src/retroarch_watchdog.c
 	$(CROSS_PREFIX)gcc -std=gnu99 -O2 -Wall -o $@ $<
