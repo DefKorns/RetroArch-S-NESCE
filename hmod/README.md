@@ -38,7 +38,8 @@ Not included: cores, shaders, BIOS files and the per-core configuration files of
 ## Differences from the 1.9.10 hmod
 
 - **Threaded video is off.** On a SNES Classic, with Ozone, a newer RetroArch peaked at about 50 MB of RAM with threaded video against 29 MB for 1.9.10; with it off it peaked at about 26 MB. CPU use was at or below 1.9.10 in the same test.
-- **Smaller feature set.** The build leaves out SDL2, SSL, RAR, CHD, zstd, bzip2, the video decoders, RetroAchievements, XMB and MaterialUI. See `hmod/build_retroarch.sh`.
+- **Smaller feature set.** The build leaves out SDL2, RAR, CHD, zstd, bzip2, the video decoders, XMB and MaterialUI. See `hmod/build_retroarch.sh`.
+- **RetroAchievements is built in but off.** Turn it on and log in at Settings, Achievements. It has not been tested on a console yet, and the build has no CHD support, so only cartridge systems get hashes.
 - **The watchdog and `fbgrab` are built from source.** The watchdog is a rewrite whose output matched the original's for the Reset button and the pad. It is also written to read the Power switch of the SNES Classic, which the original could not access; that part is untested.
 
 These numbers come from one console, two cores (Snes9x 2005 and 2010) and one game, with vsync on and sound off.
