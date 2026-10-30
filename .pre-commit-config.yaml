@@ -1,7 +1,7 @@
 # runs on the staged files before each commit; set up with "pre-commit install" (see README → Contributing)
 # only the hmod packaging is checked: the rest of the tree is RetroArch itself
 files: ^(hmod/|Makefile\.hmod$|\.github/workflows/hmod\.yml$|\.pre-commit-config\.yaml$|\.shellcheckrc$|\.markdownlint\.yaml$)
-exclude: ^(LICENSE|.*OFL.*.txt|vendor/)
+exclude: ^(LICENSE|.*OFL.*.txt|vendor/|hmod/tests/golden/)
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
