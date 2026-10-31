@@ -141,6 +141,13 @@ scnSnesSfrom() {
     --save-data-backing-file /saves/CLV-P-VAAAJ/data.sram
 }
 
+scnSnesSfrom7z() {
+  mkdir -p /games/CLV-U-UCWJY /saves/CLV-U-UCWJY
+  make_sfrom /games/CLV-U-UCWJY/ActRaiser_2.sfrom.7z
+  runChild snes_sfrom_7z snes9x2010 /games/CLV-U-UCWJY/ActRaiser_2.sfrom.7z --title-code CLV-U-UCWJY \
+    --save-data-backing-file /saves/CLV-U-UCWJY/data.sram
+}
+
 scnNesFds() {
   mkdir -p /games/CLV-P-HAAAJ /saves/CLV-P-HAAAJ
   printf 'FDS' > /games/CLV-P-HAAAJ/game.fds
@@ -252,7 +259,7 @@ scnStatesForceNand() {
 
 rm -rf "$out"
 mkdir -p "$out"
-scenarios="SnesBasic SnesSfrom NesFds FceummFds Nosaves Bezel Crt Filters Extra Xz Ips Watchdog Mame Screenshot StatesSd StatesNand StatesForceNand"
+scenarios="SnesBasic SnesSfrom SnesSfrom7z NesFds FceummFds Nosaves Bezel Crt Filters Extra Xz Ips Watchdog Mame Screenshot StatesSd StatesNand StatesForceNand"
 for s in $scenarios; do
   (
     resetFs

@@ -1,0 +1,27 @@
+## child snes9x2010 /games/CLV-U-UCWJY/ActRaiser_2.sfrom.7z --title-code CLV-U-UCWJY --save-data-backing-file /saves/CLV-U-UCWJY/data.sram
+sed: /usr/share/games/CLV-U-UCWJY/CLV-U-UCWJY.desktop: No such file or directory
+## exit 0
+## log
+tiny7zx x /games/CLV-U-UCWJY/ActRaiser_2.sfrom.7z
+mount -t overlayfs overlay -o rw,lowerdir=/tmp/rom,upperdir=/saves/CLV-U-UCWJY /tmp/rom
+umount /tmp/rom
+uistart 
+## retroarch
+retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/snes9x2010_libretro.so /tmp/rom/ActRaiser_2.sfrom.sfc 
+core-content: FAKE-CORE-snes9x2010
+rom-size: 64
+cfg-diff:
+overlay-diff:
+files:
+  F /tmp/rom/ActRaiser_2.sfrom.sfc
+## watchdog
+watchdog --pid PID
+## fbgrab
+## after
+cfg-diff:
+overlay-diff:
+files:
+  D /games/CLV-U-UCWJY
+  F /games/CLV-U-UCWJY/ActRaiser_2.sfrom.7z (117 bytes) ....................p...
+  D /saves/CLV-U-UCWJY
+  D /saves/CLV-U-UCWJY/ra_states

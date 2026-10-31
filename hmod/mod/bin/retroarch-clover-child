@@ -11,14 +11,24 @@ core="$HOME/core/${1}_libretro.so"
 tmppath="/tmp/rom"
 rom="$2"
 
-# The console's own SNES games are .sfrom containers: extract the ROM where the launchers expect it
-if [ "${rom##*.}" = "sfrom" ]; then
+# A .sfrom container, alone or in a .7z: cut the ROM out where the launchers expect it
+sfrom=
+case "$rom" in
+  *.sfrom) sfrom="$rom" ;;
+  *.sfrom.7z)
+    mkdir -p "$tmppath/unpack"
+    (cd "$tmppath/unpack" && tiny7zx x "$rom" > /dev/null 2>&1)
+    sfrom="$tmppath/unpack/$(basename "$rom" .7z)"
+    ;;
+esac
+if [ -n "$sfrom" ]; then
   mkdir -p "$tmppath"
-  sfrom_start="$(hexdump -e '1/4 "%u"' -s8 -n4 "$rom")"
-  sfrom_footer="$(hexdump -e '1/4 "%u"' -s20 -n4 "$rom")"
-  sfrom_size="$(hexdump -e '1/4 "%u"' -s$((sfrom_footer + 1)) -n4 "$rom")"
-  sfrom_rom="$tmppath/$(basename "$rom").sfc"
-  dd status=none if="$rom" iflag=skip_bytes skip="$sfrom_start" bs="$sfrom_size" count=1 > "$sfrom_rom" && rom="$sfrom_rom"
+  sfrom_start="$(hexdump -e '1/4 "%u"' -s8 -n4 "$sfrom")"
+  sfrom_footer="$(hexdump -e '1/4 "%u"' -s20 -n4 "$sfrom")"
+  sfrom_size="$(hexdump -e '1/4 "%u"' -s$((sfrom_footer + 1)) -n4 "$sfrom")"
+  sfrom_rom="$tmppath/$(basename "$sfrom").sfc"
+  dd status=none if="$sfrom" iflag=skip_bytes skip="$sfrom_start" bs="$sfrom_size" count=1 > "$sfrom_rom" && rom="$sfrom_rom"
+  rm -rf "$tmppath/unpack"
 fi
 
 game_path="$(dirname "$rom")"
