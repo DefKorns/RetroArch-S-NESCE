@@ -60,7 +60,7 @@ export LDFLAGS="-L$work/lib -L/usr/lib/arm-linux-gnueabihf -Wl,--unresolved-symb
   --disable-sdl2 --enable-ssl --enable-retrossl --disable-oss --disable-cdrom --disable-chd \
   --disable-rchd --disable-rrar --disable-rzstd --disable-rbzip2 --disable-rdds --disable-rwebp \
   --disable-rtga --disable-rbmp --disable-mcp --disable-networkgamepad \
-  --disable-xmb --disable-materialui --disable-translate --disable-accessibility --disable-gamemode
+  --disable-materialui --disable-translate --disable-accessibility --disable-gamemode
 make HAVE_CLASSIC=1 HAVE_C_A7A7=1 HAVE_HAKCHI=1 -j"$(nproc)"
 
 mkdir -p "$(dirname "$output")"

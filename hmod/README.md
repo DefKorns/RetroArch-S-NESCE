@@ -28,17 +28,17 @@ Each core hmod also adds a `/bin` shortcut (`snes05`, `snes10`, `fceumm`, `nesto
 
 ## What is included
 
-- The RetroArch front end, built for the Classics (ARMv7 Cortex-A7, Mali-400, OpenGL ES 2) with the Ozone menu, the `gl` video driver and ALSA audio.
+- The RetroArch front end, built for the Classics (ARMv7 Cortex-A7, Mali-400, OpenGL ES 2) with the XMB and Ozone menus (XMB by default), the `gl` video driver and ALSA audio.
 - The clover integration: `retroarch-clover`, `retroarch-clover-child`, `retroarch-mini`, the `clover-canoe-shvc` and `clover-kachikachi` wrappers, and the default `retroarch.cfg`.
 - `retroarch_watchdog`, which ends RetroArch when the Reset button or a pad's Home button is pressed, and `fbgrab`, for the screenshot saved with a savestate.
-- The Ozone assets, the sounds and the udev joypad profiles, fetched from the libretro repositories at build time.
+- The Ozone and XMB (monochrome theme) assets, the sounds and the udev joypad profiles, fetched from the libretro repositories at build time.
 
 Not included: cores, shaders, BIOS files and the per-core configuration files of the 1.9.10 hmod.
 
 ## Differences from the 1.9.10 hmod
 
 - **Threaded video is off.** On a SNES Classic, with Ozone, a newer RetroArch peaked at about 50 MB of RAM with threaded video against 29 MB for 1.9.10; with it off it peaked at about 26 MB. CPU use was at or below 1.9.10 in the same test.
-- **Smaller feature set.** The build leaves out SDL2, RAR, CHD, zstd, bzip2, the video decoders, XMB and MaterialUI. See `hmod/build_retroarch.sh`.
+- **Smaller feature set.** The build leaves out SDL2, RAR, CHD, zstd, bzip2, the video decoders and MaterialUI. See `hmod/build_retroarch.sh`.
 - **RetroAchievements is built in but off.** Turn it on and log in at Settings, Achievements. It has not been tested on a console yet, and the build has no CHD support, so only cartridge systems get hashes.
 - **The watchdog and `fbgrab` are built from source.** The watchdog is a rewrite whose output matched the original's for the Reset button and the pad. It is also written to read the Power switch of the SNES Classic, which the original could not access; that part is untested.
 

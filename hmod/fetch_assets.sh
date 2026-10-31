@@ -14,7 +14,7 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# Downloads the Ozone assets, the sounds and the udev joypad profiles the hmod ships.
+# Downloads the Ozone and XMB (monochrome) assets, the sounds and the udev joypad profiles the hmod ships.
 # Usage: fetch_assets.sh <libretro dir>
 set -eu
 
@@ -24,7 +24,7 @@ autoconfig_ref=2f73cbf1f74904233f1c91a5c8e220565a880375
 
 mkdir -p "$dest/assets" "$dest/joypad_autoconf"
 curl -fsSL "https://codeload.github.com/libretro/retroarch-assets/tar.gz/$assets_ref" \
-  | tar -xz --strip-components=1 -C "$dest/assets" --wildcards '*/ozone' '*/sounds'
+  | tar -xz --strip-components=1 -C "$dest/assets" --wildcards '*/ozone' '*/xmb/monochrome' '*/sounds'
 rm -rf "$dest/assets/src"
 curl -fsSL "https://codeload.github.com/libretro/retroarch-joypad-autoconfig/tar.gz/$autoconfig_ref" \
   | tar -xz --strip-components=1 -C "$dest/joypad_autoconf" --wildcards '*/udev'

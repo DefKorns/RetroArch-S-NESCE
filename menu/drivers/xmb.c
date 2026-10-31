@@ -681,6 +681,9 @@ static void xmb_calculate_visible_range(const xmb_handle_t *xmb,
 
 const char* xmb_theme_ident(void)
 {
+#ifdef HAVE_HAKCHI
+   return "monochrome";
+#else
    unsigned menu_xmb_theme = config_get_ptr()->uints.menu_xmb_theme;
 
    switch (menu_xmb_theme)
@@ -712,6 +715,7 @@ const char* xmb_theme_ident(void)
          break;
    }
    return "monochrome";
+#endif
 }
 
 /* NOTE: This exists because calloc()ing xmb_node_t is expensive
@@ -7161,11 +7165,16 @@ static void xmb_context_reset_textures(
    xmb->current_menu_icon                = 0;
 
    /* Recolor */
+#ifdef HAVE_HAKCHI
+   (void)menu_xmb_theme;
+   memcpy(xmb->item_color_base, xmb_color_white, sizeof(xmb->item_color_base));
+#else
    if (     menu_xmb_theme == XMB_ICON_THEME_MONOCHROME_INVERTED
          || menu_xmb_theme == XMB_ICON_THEME_AUTOMATIC_INVERTED)
       memcpy(xmb->item_color_base, xmb_color_black, sizeof(xmb->item_color_base));
    else
       memcpy(xmb->item_color_base, xmb_color_white, sizeof(xmb->item_color_base));
+#endif
 }
 
 
