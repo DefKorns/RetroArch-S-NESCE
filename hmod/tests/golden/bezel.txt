@@ -9,7 +9,7 @@ rom-size: 3
 cfg-diff:
 --- /tmp/cfg_orig
 +++ /etc/libretro/retroarch.cfg
-@@ -93,7 +93,7 @@
+@@ -89,7 +89,7 @@
  video_max_swapchain_images = "3"
  video_swap_interval = "1"
  video_rotation = "0"
@@ -18,7 +18,7 @@ cfg-diff:
  state_slot = "0"
  bundle_assets_extract_version_current = "0"
  bundle_assets_extract_last_version = "0"
-@@ -222,7 +222,7 @@
+@@ -218,7 +218,7 @@
  menu_navigation_wraparound_enable = "true"
  menu_navigation_browser_filter_supported_extensions_enable = "true"
  menu_show_advanced_settings = "true"
@@ -27,7 +27,7 @@ cfg-diff:
  input_overlay_enable_autopreferred = "true"
  input_overlay_hide_in_menu = "true"
  network_cmd_enable = "false"
-@@ -1579,7 +1579,7 @@
+@@ -1576,7 +1576,7 @@
  core_options_path = ""
  video_shader = ""
  menu_wallpaper = "~/wallpapers/retrocat/retrocat_04.png"

@@ -9,7 +9,7 @@ rom-size: 3
 cfg-diff:
 --- /tmp/cfg_orig
 +++ /etc/libretro/retroarch.cfg
-@@ -182,7 +182,7 @@
+@@ -178,7 +178,7 @@
  video_windowed_fullscreen = "true"
  video_crop_overscan = "false"
  video_scale_integer = "false"
@@ -18,7 +18,7 @@ cfg-diff:
  video_force_aspect = "true"
  video_threaded = "false"
  video_shared_context = "false"
-@@ -1579,7 +1579,7 @@
+@@ -1576,7 +1576,7 @@
  core_options_path = ""
  video_shader = ""
  menu_wallpaper = "~/wallpapers/retrocat/retrocat_04.png"
