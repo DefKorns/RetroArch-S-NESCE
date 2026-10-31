@@ -18403,7 +18403,7 @@ static void settings_build_core_updater(
       GROUP_STATE(MENU_ENUM_LABEL_VALUE_CORE_UPDATER_SETTINGS, MENU_ENUM_LABEL_UPDATER_SETTINGS);
 #ifdef HAVE_NETWORKING
 
-#ifdef HAVE_UPDATE_CORES
+#if defined(HAVE_UPDATE_CORES) && !defined(HAVE_HAKCHI)
 #if defined(ANDROID)
       /* Play Store builds do not fetch cores
        * from the buildbot */
@@ -18431,6 +18431,7 @@ static void settings_build_core_updater(
       }
 #endif
 
+#ifndef HAVE_HAKCHI
       CONFIG_STRING(
             list, list_info,
             settings->paths.network_buildbot_assets_url,
@@ -18446,6 +18447,7 @@ static void settings_build_core_updater(
       SETTINGS_DATA_LIST_CURRENT_ADD_FLAGS(list, list_info, SD_FLAG_ALLOW_INPUT);
       (*list)[list_info->index - 1].ui_type       = ST_UI_TYPE_STRING_LINE_EDIT;
       SETTINGS_ACTION_SET(start, &(*list)[list_info->index - 1], setting_generic_action_start_default)
+#endif
 
             ADD_DESC(core_updater_desc_0);
 
