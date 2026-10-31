@@ -31,7 +31,7 @@ Each core hmod also adds a `/bin` shortcut (`snes05`, `snes10`, `fceumm`, `nesto
 - The RetroArch front end, built for the Classics (ARMv7 Cortex-A7, Mali-400, OpenGL ES 2) with the XMB and Ozone menus (XMB by default), the `gl` video driver and ALSA audio.
 - The clover integration: `retroarch-clover`, `retroarch-clover-child`, `retroarch-mini`, the `clover-canoe-shvc` and `clover-kachikachi` wrappers, and the default `retroarch.cfg`.
 - `retroarch_watchdog`, which ends RetroArch when the Reset button or a pad's Home button is pressed, and `fbgrab`, for the screenshot saved with a savestate.
-- The Ozone and XMB (monochrome theme) assets, the sounds and the udev joypad profiles, fetched from the libretro repositories at build time.
+- The Ozone and XMB (monochrome theme) assets and the sounds, and the udev joypad profiles, fetched at build time. The assets are the `assets.tar.gz` of [retroarch-snesce-cores](https://github.com/DefKorns/retroarch-snesce-cores) (the same files as the updater's `assets.zip`), checked against the `assets.tar.sha256` published next to it. The build always takes the assets published at that moment.
 
 Not included: cores, shaders, BIOS files and the per-core configuration files of the 1.9.10 hmod.
 

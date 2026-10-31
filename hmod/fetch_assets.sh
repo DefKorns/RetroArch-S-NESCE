@@ -14,18 +14,22 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
-# Downloads the Ozone and XMB (monochrome) assets, the sounds and the udev joypad profiles the hmod ships.
+# Downloads the assets (Ozone, XMB monochrome theme and sounds, cut down by retroarch-snesce-cores)
+# and the udev joypad profiles the hmod ships. ASSETS_URL overrides where the assets come from.
 # Usage: fetch_assets.sh <libretro dir>
 set -eu
 
 dest="$1"
-assets_ref=d9f969054dc7fbb6fa89519036d2b971e0855b51
+assets_url="${ASSETS_URL:-https://defkorns.github.io/retroarch-snesce-cores/frontend/assets.tar.gz}"
 autoconfig_ref=2f73cbf1f74904233f1c91a5c8e220565a880375
 
 mkdir -p "$dest/assets" "$dest/joypad_autoconf"
-curl -fsSL "https://codeload.github.com/libretro/retroarch-assets/tar.gz/$assets_ref" \
-  | tar -xz --strip-components=1 -C "$dest/assets" --wildcards '*/ozone' '*/xmb/monochrome' '*/sounds'
-rm -rf "$dest/assets/src"
+curl -fsSL -o "$dest/assets.tar.gz" "$assets_url"
+curl -fsSL -o "$dest/assets.tar.sha256" "${assets_url%.gz}.sha256"
+gzip -dc "$dest/assets.tar.gz" > "$dest/assets.tar"
+echo "$(cat "$dest/assets.tar.sha256")  $dest/assets.tar" | sha256sum -c -
+tar -xf "$dest/assets.tar" -C "$dest/assets"
+rm -f "$dest/assets.tar.gz" "$dest/assets.tar" "$dest/assets.tar.sha256"
 curl -fsSL "https://codeload.github.com/libretro/retroarch-joypad-autoconfig/tar.gz/$autoconfig_ref" \
   | tar -xz --strip-components=1 -C "$dest/joypad_autoconf" --wildcards '*/udev'
 # some upstream profiles use CRLF, which hmod-check rejects
