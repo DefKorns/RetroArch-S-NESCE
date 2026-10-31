@@ -17539,7 +17539,7 @@ static bool menu_displaylist_ctl_internal(
                }
 #endif /* HAVE_UPDATE_CORES */
 
-#if defined(HAVE_COMPRESSION) && !defined(HAVE_MIST)
+#if defined(HAVE_COMPRESSION) && !defined(HAVE_MIST) && !defined(HAVE_HAKCHI)
                if (menu_entries_append(info->list,
                         msg_hash_to_str(MENU_ENUM_LABEL_VALUE_DOWNLOAD_CORE_SYSTEM_FILES),
                         MENU_ENUM_LABEL_DOWNLOAD_CORE_SYSTEM_FILES_STR,
@@ -17548,12 +17548,14 @@ static bool menu_displaylist_ctl_internal(
                   count++;
 #endif
 
+#ifndef HAVE_HAKCHI
                if (menu_entries_append(info->list,
                         msg_hash_to_str(MENU_ENUM_LABEL_VALUE_DOWNLOAD_CORE_CONTENT),
                         MENU_ENUM_LABEL_DOWNLOAD_CORE_CONTENT_DIRS_STR,
                         MENU_ENUM_LABEL_DOWNLOAD_CORE_CONTENT_DIRS,
                         MENU_SETTING_ACTION, 0, 0, NULL))
                   count++;
+#endif
 
 #ifdef HAVE_ONLINE_UPDATER
                if (MENU_DISPLAYLIST_PARSE_SETTINGS_ENUM(info->list,
@@ -17562,6 +17564,7 @@ static bool menu_displaylist_ctl_internal(
                   count++;
 #endif
 
+#ifndef HAVE_HAKCHI
                if (menu_entries_append(info->list,
                         msg_hash_to_str(MENU_ENUM_LABEL_VALUE_PL_THUMBNAILS_UPDATER_LIST),
                         MENU_ENUM_LABEL_PL_THUMBNAILS_UPDATER_LIST_STR,
@@ -17575,6 +17578,7 @@ static bool menu_displaylist_ctl_internal(
                         PARSE_ONLY_BOOL, false) != -1)
                   count++;
 #endif
+#endif /* !HAVE_HAKCHI */
 
 #ifdef HAVE_COMPRESSION
 #ifdef HAVE_UPDATE_CORE_INFO
@@ -17598,12 +17602,14 @@ static bool menu_displaylist_ctl_internal(
                   count++;
 #endif
 #if !defined(_3DS)
+#ifndef HAVE_HAKCHI
                if (menu_entries_append(info->list,
                         msg_hash_to_str(MENU_ENUM_LABEL_VALUE_UPDATE_AUTOCONFIG_PROFILES),
                         MENU_ENUM_LABEL_UPDATE_AUTOCONFIG_PROFILES_STR,
                         MENU_ENUM_LABEL_UPDATE_AUTOCONFIG_PROFILES,
                         MENU_SETTING_ACTION, 0, 0, NULL))
                   count++;
+#endif
 
                if (menu_entries_append(info->list,
                         msg_hash_to_str(MENU_ENUM_LABEL_VALUE_UPDATE_CHEATS),
@@ -17623,14 +17629,17 @@ static bool menu_displaylist_ctl_internal(
 #endif
 #endif /* HAVE_LIBRETRODB */
 #if !defined(_3DS)
+#ifndef HAVE_HAKCHI
                if (menu_entries_append(info->list,
                         msg_hash_to_str(MENU_ENUM_LABEL_VALUE_UPDATE_OVERLAYS),
                         MENU_ENUM_LABEL_UPDATE_OVERLAYS_STR,
                         MENU_ENUM_LABEL_UPDATE_OVERLAYS,
                         MENU_SETTING_ACTION, 0, 0, NULL))
                   count++;
+#endif
 
 #if defined(HAVE_CG) || defined(HAVE_GLSL) || defined(HAVE_SLANG) || defined(HAVE_HLSL)
+#ifndef HAVE_HAKCHI
                if (BIT32_GET(flags.flags, GFX_CTX_FLAGS_SHADERS_CG))
                {
                   if (menu_entries_append(info->list,
@@ -17640,6 +17649,7 @@ static bool menu_displaylist_ctl_internal(
                            MENU_SETTING_ACTION, 0, 0, NULL))
                      count++;
                }
+#endif
 
                if (BIT32_GET(flags.flags, GFX_CTX_FLAGS_SHADERS_GLSL))
                {
@@ -17651,6 +17661,7 @@ static bool menu_displaylist_ctl_internal(
                      count++;
                }
 
+#ifndef HAVE_HAKCHI
                if (BIT32_GET(flags.flags, GFX_CTX_FLAGS_SHADERS_SLANG))
                {
                   if (menu_entries_append(info->list,
@@ -17660,6 +17671,7 @@ static bool menu_displaylist_ctl_internal(
                            MENU_SETTING_ACTION, 0, 0, NULL))
                      count++;
                }
+#endif
 #endif
 #endif /* !defined(_3DS) */
 #endif /* HAVE_COMPRESSION */
