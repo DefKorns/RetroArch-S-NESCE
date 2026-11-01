@@ -1,0 +1,74 @@
+#!/bin/sh
+#  Copyright (C) 2026 DefKorns (https://defkorns.github.io/LICENSE)
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU General Public License as published by
+#  the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU General Public License for more details.
+#
+#  You should have received a copy of the GNU General Public License
+#  along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# A /bin shortcut for every core in /etc/libretro/core, and for the names in shortcuts.list ("<name> <core>...", the cores
+# of retroarch-snesce-cores), so a game started by name finds the cores the RetroArch menu downloaded;
+# one that is already there is left alone. Usage: retroarch-shortcuts [root]
+root="${1:-}"
+core_dir="$root/etc/libretro/core"
+list="$root/etc/libretro/shortcuts.list"
+
+# the first of the cores that is installed answers
+shortcutBody() {
+  local reversed="" core
+  if [ $# -eq 1 ]; then
+    echo "exec retroarch-clover $1 \"\$@\""
+    return
+  fi
+  for core in "$@"; do
+    reversed="$core $reversed"
+  done
+  # shellcheck disable=SC2086
+  set -- $reversed
+  echo "core=$1"
+  shift
+  for core in "$@"; do
+    echo "[ -f /etc/libretro/core/${core}_libretro.so ] && core=$core"
+  done
+  # shellcheck disable=SC2016
+  echo 'exec retroarch-clover "$core" "$@"'
+}
+
+makeShortcut() {
+  local link="$1"
+  shift
+  {
+    echo '#!/bin/sh'
+    echo '# retroarch-shortcuts'
+    shortcutBody "$@"
+  } > "$root/bin/$link"
+  chmod +x "$root/bin/$link"
+}
+
+for core_file in "$core_dir"/*_libretro.so; do
+  [ -f "$core_file" ] || continue
+  core_name="${core_file##*/}"
+  core_name="${core_name%_libretro.so}"
+  [ -e "$root/bin/$core_name" ] || makeShortcut "$core_name" "$core_name"
+done
+
+[ -f "$list" ] || exit 0
+while read -r link cores; do
+  [ -n "$link" ] || continue
+  [ -e "$root/bin/$link" ] && continue
+  for core in $cores; do
+    if [ -f "$core_dir/${core}_libretro.so" ]; then
+      # shellcheck disable=SC2086
+      makeShortcut "$link" $cores
+      break
+    fi
+  done
+done < "$list"

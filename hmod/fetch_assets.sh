@@ -30,6 +30,8 @@ gzip -dc "$dest/assets.tar.gz" > "$dest/assets.tar"
 echo "$(cat "$dest/assets.tar.sha256")  $dest/assets.tar" | sha256sum -c -
 tar -xf "$dest/assets.tar" -C "$dest/assets"
 rm -f "$dest/assets.tar.gz" "$dest/assets.tar" "$dest/assets.tar.sha256"
+# the legacy /bin names of the cores, read by retroarch-shortcuts; without it only the core names get a shortcut
+curl -fsSL -o "$dest/shortcuts.list" "${assets_url%/*}/shortcuts.list" || echo "no shortcuts.list at ${assets_url%/*}" >&2
 curl -fsSL "https://codeload.github.com/libretro/retroarch-joypad-autoconfig/tar.gz/$autoconfig_ref" \
   | tar -xz --strip-components=1 -C "$dest/joypad_autoconf" --wildcards '*/udev'
 # some upstream profiles use CRLF, which hmod-check rejects

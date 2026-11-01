@@ -3,6 +3,7 @@
 ## log
 mount -t overlayfs overlay -o rw,lowerdir=/games/CLV-P-HAAAJ,upperdir=/saves/CLV-P-HAAAJ /games/CLV-P-HAAAJ
 umount /games/CLV-P-HAAAJ
+retroarch-shortcuts 
 uistart 
 ## retroarch
 retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/nestopia_libretro.so /games/CLV-P-HAAAJ/game.fds 

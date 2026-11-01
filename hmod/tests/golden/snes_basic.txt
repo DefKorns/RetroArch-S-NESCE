@@ -3,6 +3,7 @@
 ## log
 mount -t overlayfs overlay -o rw,lowerdir=/games/CLV-P-VAAAJ,upperdir=/saves/CLV-P-VAAAJ /games/CLV-P-VAAAJ
 umount /games/CLV-P-VAAAJ
+retroarch-shortcuts 
 uistart 
 ## retroarch
 retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/snes9x2005_libretro.so /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc 

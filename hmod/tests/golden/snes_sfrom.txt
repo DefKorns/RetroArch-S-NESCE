@@ -4,6 +4,7 @@ sed: /usr/share/games/CLV-P-VAAAJ/CLV-P-VAAAJ.desktop: No such file or directory
 ## log
 mount -t overlayfs overlay -o rw,lowerdir=/tmp/rom,upperdir=/saves/CLV-P-VAAAJ /tmp/rom
 umount /tmp/rom
+retroarch-shortcuts 
 uistart 
 ## retroarch
 retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/snes9x2005_libretro.so /tmp/rom/CLV-P-VAAAJ.sfrom.sfc 

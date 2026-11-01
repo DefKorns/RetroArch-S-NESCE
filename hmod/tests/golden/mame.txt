@@ -5,6 +5,7 @@ mount -t overlayfs overlay -o rw,lowerdir=/games/CLV-Z-MAME,upperdir=/saves/CLV-
 mount_bind /etc/libretro/system/neogeo_old.zip /games/CLV-Z-MAME/neogeo.zip
 umount /games/CLV-Z-MAME/neogeo.zip
 umount /games/CLV-Z-MAME
+retroarch-shortcuts 
 uistart 
 ## retroarch
 retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/mame2003_libretro.so /games/CLV-Z-MAME/game.zip 

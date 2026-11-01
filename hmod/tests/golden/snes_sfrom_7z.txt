@@ -5,6 +5,7 @@ sed: /usr/share/games/CLV-U-UCWJY/CLV-U-UCWJY.desktop: No such file or directory
 tiny7zx x /games/CLV-U-UCWJY/ActRaiser_2.sfrom.7z
 mount -t overlayfs overlay -o rw,lowerdir=/tmp/rom,upperdir=/saves/CLV-U-UCWJY /tmp/rom
 umount /tmp/rom
+retroarch-shortcuts 
 uistart 
 ## retroarch
 retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/snes9x2010_libretro.so /tmp/rom/ActRaiser_2.sfrom.sfc 

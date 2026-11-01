@@ -393,5 +393,8 @@ fi
 rm -rf "$tmppath"
 rm -rf "$rcache"
 
+# Shortcuts for the cores the RetroArch menu downloaded
+retroarch-shortcuts
+
 # Back to the shell
 uistart

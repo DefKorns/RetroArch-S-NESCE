@@ -1,6 +1,7 @@
 ## child km_test /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc
 ## exit 0
 ## log
+retroarch-shortcuts 
 uistart 
 ## retroarch
 retroarch -c /etc/libretro/retroarch.cfg -vfL /var/cache/retroarch/km_test_libretro.so /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc 

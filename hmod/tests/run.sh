@@ -17,7 +17,7 @@
 # Runs retroarch-clover-child in a BusyBox container with stand-ins for retroarch,
 # mount and the rest, and compares what it does with hmod/tests/golden.
 # Usage: sh hmod/tests/run.sh [--update]   (docker-run.sh starts it in the container)
-# shellcheck disable=SC2329 # the scn* functions are called as "scn$s"
+# shellcheck disable=SC2329,SC2317 # the scn* functions are called as "scn$s"
 set -u
 
 # it deletes /etc/libretro, /etc/preinit and more, so it only runs in the container
@@ -257,9 +257,30 @@ scnStatesForceNand() {
   runChild states_force_nand snes9x2005 /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc --save-data-backing-file /saves/CLV-P-VAAAJ/data.sram --nand-states
 }
 
+# retroarch-shortcuts on a copy of the tree: one core already has its shortcut, the others get one,
+# and the names of shortcuts.list whose cores are installed
+scnShortcuts() {
+  root=/tmp/sc
+  mkdir -p "$root/bin" "$root/etc/libretro/core"
+  for core in mame2003 mesen snes9x2005; do
+    printf 'FAKE-CORE' > "$root/etc/libretro/core/${core}_libretro.so"
+  done
+  printf 'own
+' > "$root/bin/snes9x2005"
+  printf '%s
+' 'snes05 snes9x2005' 'snes9x snes9x2010 snes9x2005' 'md genesis_plus_gx' 'mesen mesen' > "$root/etc/libretro/shortcuts.list"
+  sh "$mod/bin/retroarch-shortcuts" "$root"
+  {
+    for f in "$root"/bin/*; do
+      echo "## ${f##*/} $([ -x "$f" ] && echo executable || echo plain)"
+      cat "$f"
+    done
+  } > "$out/shortcuts.txt"
+}
+
 rm -rf "$out"
 mkdir -p "$out"
-scenarios="SnesBasic SnesSfrom SnesSfrom7z NesFds FceummFds Nosaves Bezel Crt Filters Extra Xz Ips Watchdog Mame Screenshot StatesSd StatesNand StatesForceNand"
+scenarios="Shortcuts SnesBasic SnesSfrom SnesSfrom7z NesFds FceummFds Nosaves Bezel Crt Filters Extra Xz Ips Watchdog Mame Screenshot StatesSd StatesNand StatesForceNand"
 for s in $scenarios; do
   (
     resetFs
