@@ -36,3 +36,17 @@ curl -fsSL "https://codeload.github.com/libretro/retroarch-joypad-autoconfig/tar
   | tar -xz --strip-components=1 -C "$dest/joypad_autoconf" --wildcards '*/udev'
 # some upstream profiles use CRLF, which hmod-check rejects
 find "$dest/joypad_autoconf" -name '*.cfg' -exec sed -i 's/\r$//' {} +
+# upstream maps no stick axes for the Clovercon, so the Wii Classic Controller sticks never reach RetroArch
+for pad in Nintendo_Clovercon_-_controller1 Nintendo_Clovercon_-_controller2; do
+  cat >> "$dest/joypad_autoconf/udev/$pad.cfg" <<'EOF'
+
+input_l_x_plus_axis = "+0"
+input_l_x_minus_axis = "-0"
+input_l_y_plus_axis = "+1"
+input_l_y_minus_axis = "-1"
+input_r_x_plus_axis = "+3"
+input_r_x_minus_axis = "-3"
+input_r_y_plus_axis = "+4"
+input_r_y_minus_axis = "-4"
+EOF
+done
