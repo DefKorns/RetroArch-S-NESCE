@@ -13,7 +13,7 @@ files:
 ## watchdog
 watchdog --pid PID
 ## fbgrab
-fbgrab -z 5 /saves/CLV-P-VAAAJ/shot.png
+fbgrab -a -z 1 /saves/CLV-P-VAAAJ/shot.png
 ## after
 cfg-diff:
 overlay-diff:

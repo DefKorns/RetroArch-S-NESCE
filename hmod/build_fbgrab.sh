@@ -26,6 +26,9 @@ work="$(pwd)/out/fbgrab"
 rm -rf "$work"
 mkdir -p "$work"
 curl -fsSL "https://raw.githubusercontent.com/GunnarMonell/fbgrab/$ref/fbgrab.c" -o "$work/fbgrab.c"
+# upstream always compresses at level 9 and ignores -z, which takes 3 s on the console
+sed -i 's/png_set_compression_level(png_ptr, Z_BEST_COMPRESSION);/png_set_compression_level(png_ptr, compression);/' "$work/fbgrab.c"
+grep -q 'png_set_compression_level(png_ptr, compression);' "$work/fbgrab.c"
 export PKG_CONFIG_LIBDIR=/usr/lib/arm-linux-gnueabihf/pkgconfig
 # shellcheck disable=SC2046
 "${cross}gcc" -O2 -I/usr/include/arm-linux-gnueabihf -o "$work/fbgrab" "$work/fbgrab.c" $(pkg-config --cflags --libs libpng) -lz -lm
