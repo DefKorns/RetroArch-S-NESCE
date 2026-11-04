@@ -369,7 +369,13 @@ if [ -n "$sram" ]; then
       find "$rcache" -maxdepth 1 -iname "$i" -exec cp -rf {} "$sram_folder" \;
     done
   fi
-  [ -f "$rsram" ] && cp -f "$rsram" "$sram"
+  if [ -f "$rsram" ]; then
+    if cp -f "$rsram" "$sram.tmp"; then
+      mv -f "$sram.tmp" "$sram"
+    else
+      rm -f "$sram.tmp"
+    fi
+  fi
 fi
 
 # Restore modified retroarch.cfg lines if bezel-mode was enabled
