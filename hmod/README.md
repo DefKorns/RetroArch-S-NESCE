@@ -12,8 +12,8 @@ The cores live in a separate repository, [retroarch-snesce-cores](https://github
 
 ## Install
 
-1. Uninstall the RetroArch 1.9.10 Ozone hmod (`_km_retroarch_1910_ozone`). Both install `/bin/retroarch`, so they cannot share a console.
-2. Install `retroarch_snesce.hmod` with Hakchi like any other hmod.
+1. Uninstall the previous RetroArch hmod and Synchronize: the RetroArch 1.9.10 Ozone (`_km_retroarch_1910_ozone`), the 1.8.4 Xtreme SC (`_km_retroarch_184_xtreme_sc`) or an earlier beta of this one. They all install `/bin/retroarch`, and installing over them leaves a mix of the files of both.
+2. Install `retroarch_snesce.hmod` with Hakchi like any other hmod, and Synchronize.
 3. Install at least one core from [retroarch-snesce-cores](https://github.com/DefKorns/retroarch-snesce-cores), for example `retroarch_snesce_core_snes9x2005.hmod` for SNES.
 
 ## Play
