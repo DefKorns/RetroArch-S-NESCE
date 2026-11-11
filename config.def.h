@@ -2203,7 +2203,9 @@
 #define DEFAULT_METAL_GPU_INDEX 0
 #endif
 
-#if defined(HAKCHI)
+#if defined(HAVE_HAKCHI)
+#define DEFAULT_BUILDBOT_SERVER_URL "https://defkorns.github.io/retroarch-snesce-cores"
+#elif defined(HAKCHI)
 #define DEFAULT_BUILDBOT_SERVER_URL "http://hakchicloud.com/Libretro_Cores/"
 #elif defined(WEBOS)
 #if defined(__arm__)
@@ -2312,7 +2314,9 @@
 #define DEFAULT_BUILDBOT_SERVER_URL ""
 #endif
 
-#ifdef __EMSCRIPTEN__
+#if defined(HAVE_HAKCHI)
+#define DEFAULT_BUILDBOT_ASSETS_SERVER_URL "https://defkorns.github.io/retroarch-snesce-cores"
+#elif defined(__EMSCRIPTEN__)
 #define DEFAULT_BUILDBOT_ASSETS_SERVER_URL "https://buildbot.libretro.com/assets/"
 #else
 #define DEFAULT_BUILDBOT_ASSETS_SERVER_URL "http://buildbot.libretro.com/assets/"

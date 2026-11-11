@@ -1,0 +1,20 @@
+## mame2003 executable
+#!/bin/sh
+# retroarch-shortcuts
+exec retroarch-clover mame2003 "$@"
+## mesen executable
+#!/bin/sh
+# retroarch-shortcuts
+exec retroarch-clover mesen "$@"
+## snes05 executable
+#!/bin/sh
+# retroarch-shortcuts
+exec retroarch-clover snes9x2005 "$@"
+## snes9x executable
+#!/bin/sh
+# retroarch-shortcuts
+core=snes9x2005
+[ -f /etc/libretro/core/snes9x2010_libretro.so ] && core=snes9x2010
+exec retroarch-clover "$core" "$@"
+## snes9x2005 plain
+own

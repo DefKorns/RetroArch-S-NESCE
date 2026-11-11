@@ -1,0 +1,35 @@
+name: upstream-release
+
+on:
+  schedule:
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          sparse-checkout: version.all
+          sparse-checkout-cone-mode: false
+      - name: Open an issue when libretro/RetroArch has a newer release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          current=$(sed -n 's/^#define PACKAGE_VERSION "\(.*\)"/\1/p' version.all)
+          latest=$(gh api repos/libretro/RetroArch/releases/latest --jq .tag_name)
+          latest=${latest#v}
+          echo "ours: $current, upstream: $latest"
+          [ -n "$current" ] && [ -n "$latest" ] || { echo "could not read a version" >&2; exit 1; }
+          [ "$current" != "$latest" ] || exit 0
+          [ "$(printf '%s\n%s\n' "$current" "$latest" | sort -V | tail -1)" = "$latest" ] || exit 0
+          title="RetroArch $latest is out"
+          existing=$(gh issue list --repo "$GITHUB_REPOSITORY" --state all --search "\"$title\" in:title" --json number --jq length)
+          [ "$existing" = 0 ] || exit 0
+          gh issue create --repo "$GITHUB_REPOSITORY" --title "$title" \
+            --body "libretro/RetroArch released [v$latest](https://github.com/libretro/RetroArch/releases/tag/v$latest). This fork is on $current."
