@@ -336,6 +336,7 @@ scnMini() {
   touch /bin/remote-exec
   mkdir -p /wrap
   cp "$mod/bin/retroarch-mini" /wrap/
+  chmod +x /wrap/retroarch-mini
   rom="/games/a b/it's.sfc"
   {
     echo "## mini"
