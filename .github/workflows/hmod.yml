@@ -11,7 +11,16 @@ on:
   workflow_dispatch:
 
 jobs:
+  tests:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v5
+      - run: sh classicmini/tests/docker-run.sh
+
   hmod:
+    needs: tests
     # Keep in sync with the vendor/hmod-build submodule tag.
     uses: DefKorns/hmod-build/.github/workflows/hmod.yml@v1.8.1
     with:
