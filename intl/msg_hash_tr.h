@@ -2117,9 +2117,16 @@ static const struct
    char s_4b582a0c[24];
    char s_61213f1d[18];
    char s_95e4b29f[69];
+   char s_fa462638[9];
+   char s_29f97e35[8];
+   char s_569b0627[9];
+   char s_99b1b2f6[5];
    char s_60258de0[6];
    char s_caf61308[9];
+   char s_5410e874[6];
    char s_c7a27b20[9];
+   char s_d65a7d95[9];
+   char s_d6611158[4];
    char s_317b17ed[11];
    char s_94c8d15f[11];
    char s_1f66aac3[10];
@@ -2161,6 +2168,7 @@ static const struct
    char s_52e3d6ea[31];
    char s_2c868ae4[6];
    char s_9c535394[6];
+   char s_3253994e[8];
    char s_a9c8430e[22];
    char s_f5911f43[35];
    char s_9017e0d3[26];
@@ -2201,10 +2209,6 @@ static const struct
    char s_482ee1f1[8];
    char s_214b7699[11];
    char s_f90edcc2[64];
-#if defined(RARCH_MOBILE)
-   char s_774121c7[49];
-   char s_774121c8[49];
-#endif
    char s_b0fb58d3[33];
    char s_b0fb58d4[33];
    char s_92a02470[33];
@@ -2213,6 +2217,7 @@ static const struct
    char s_8f379310[31];
    char s_6a9b757c[30];
    char s_6c52dfb1[24];
+   char s_334daaaa[7];
    char s_9119ef97[27];
 #if defined (WIIU)
 #ifdef WIIU
@@ -2360,7 +2365,6 @@ static const struct
    char s_aa08c6d6[76];
 #endif
 #endif
-   char s_27aef25c[56];
 #ifdef _3DS
    char s_2873cef1[64];
    char s_b4816da6[46];
@@ -3139,7 +3143,6 @@ static const struct
    char s_a55bf936[34];
    char s_c519f84d[42];
    char s_48aefa30[30];
-   char s_5d383a58[45];
    char s_dcf8bd8b[44];
    char s_bce9b94f[42];
    char s_d32f5a63[33];
@@ -3329,10 +3332,8 @@ static const struct
    char s_7e96b5ce[43];
    char s_c2314d30[222];
 #if defined(RARCH_MOBILE)
-   char s_82c9e375[152];
-   char s_82c9e376[141];
+   char s_82c9e376[127];
 #endif
-   char s_73658ec1[131];
    char s_73658ec2[127];
    char s_8010a29e[108];
    char s_81120e85[107];
@@ -3747,6 +3748,7 @@ static const struct
    char s_8ab54d62[87];
    char s_aa554847[23];
    char s_ac2c797c[28];
+   char s_c52621db[6];
    char s_3fe94404[5];
    char s_80528b14[34];
    char s_eae21890[40];
@@ -6378,9 +6380,16 @@ static const struct
    "Bildirim Konumu (Dikey)",
    "Monit\303\266r \304\260ndeksi",
    "Android ve iOS cihazlarda \303\247entik \303\274zerinde tam ekran\304\261 etkinle\305\237tir",
+   "Duraklat",
+   "Y\303\274ksek",
+   "D\303\274\305\237\303\274k",
+   "Orta",
    "Daima",
    "Otomatik",
+   "Daima",
    "Otomatik",
+   "\304\260kiside",
+   "Yok",
    "180 derece",
    "270 derece",
    "90 derece",
@@ -6422,6 +6431,7 @@ static const struct
    "D\303\266nen tarama \303\247izgisi taklidi",
    "Yatay",
    "Dikey",
+   "\303\226l\303\247ek",
    "Video G\303\266lgelendirici",
    "Otomatik G\303\266lgelendirici Gecikmesi",
    "Video G\303\266lgelendiricileri",
@@ -6462,10 +6472,6 @@ static const struct
    "Dengeli",
    "Performans",
    "Metal Arg\303\274man Arabelleklerini Kullan (Yeniden ba\305\237lat\304\261lmal\304\261)",
-#if defined(RARCH_MOBILE)
-   "G\303\266r\303\274n\303\274m Ba\304\237lant\304\261 Noktas\304\261 X (Portre Y\303\266n\303\274)",
-   "G\303\266r\303\274n\303\274m Ba\304\237lant\304\261 Noktas\304\261 Y (Portre Y\303\266n\303\274)",
-#endif
    "G\303\266r\303\274n\303\274m Ba\304\237lant\304\261 Noktas\304\261 X",
    "G\303\266r\303\274n\303\274m Ba\304\237lant\304\261 Noktas\304\261 Y",
    "\303\226zel En Boy Oran\304\261 (Y\303\274kseklik)",
@@ -6474,6 +6480,7 @@ static const struct
    "\303\226zel En Boy Oran\304\261 (Y Konumu)",
    "VI Ekran Geni\305\237li\304\237ini Ayarla",
    "Dikey E\305\237itleme (Vsync)",
+   "Sistem",
    "Beklenebilir Takas Zinciri",
 #if defined (WIIU)
 #ifdef WIIU
@@ -6672,7 +6679,6 @@ static const struct
    "\237\304\261 b\304\261rak\304\261n",
 #endif
 #endif
-   "Bluetooth cihazlar\304\261n\304\261 tarar ve ba\304\237lant\304\261 olu\305\237turur.",
 #ifdef _3DS
    "Alt ekran i\303\247erik dizini. Dizin 'bottom_menu.png' i\303\247ermelidir.",
    "Alt ekran yaz\304\261 tipi mavi rengini ayarlay\304\261n.",
@@ -8119,7 +8125,6 @@ static const struct
    "'Gecikme' ayarlar\304\261n\304\261 g\303\266sterin.",
    "'G\303\274nl\303\274k Kayd\304\261' ayarlar\304\261n\304\261 g\303\266sterin.",
    "'A\304\237' ayarlar\304\261n\304\261 g\303\266sterin.",
-   "'Ekran G\303\266r\303\274n\303\274m\303\274' ayarlar\304\261n\304\261 g\303\266sterin.",
    "'Oynatma Listeleri' ayarlar\304\261n\304\261 g\303\266sterin.",
    "'G\303\274\303\247 Y\303\266netimi' ayarlar\304\261n\304\261 g\303\266sterin.",
    "'Kay\304\261t' ayarlar\304\261n\304\261 g\303\266sterin.",
@@ -8470,16 +8475,9 @@ static const struct
    "\304\261m veya i\305\237letim sistemi s\303\274r\303\274mlerinde baz\304\261 g\303\266lgelendiri"
    "cileri bozabilir.",
 #if defined(RARCH_MOBILE)
-   "G\303\266r\303\274n\303\274m alan\304\261 i\303\247erik geni\305\237li\304\237inden daha geni"
-   "\305\237 oldu\304\237unda i\303\247eri\304\237in yatay konumu. 0,0 en sol, 0,5 merkez, 1,0 en sa"
-   "\304\237d\304\261r. (Dikey Y\303\266nlendirme)",
    "G\303\266r\303\274n\303\274m i\303\247erik y\303\274ksekli\304\237inden daha uzun oldu\304\237un"
-   "da i\303\247eri\304\237in dikey konumu. 0,0 \303\274st, 0,5 orta, 1,0 alt konumdur. (Dikey Y\303"
-   "\266nlendirme)",
+   "da i\303\247eri\304\237in dikey konumu. 0,0 \303\274st, 0,5 orta, 1,0 alt anlam\304\261na gelir.",
 #endif
-   "G\303\266r\303\274n\303\274m alan\304\261 i\303\247erik geni\305\237li\304\237inden daha geni"
-   "\305\237 oldu\304\237unda i\303\247eri\304\237in yatay konumu. 0,0 en sol, 0,5 merkez, 1,0 en sa"
-   "\304\237d\304\261r.",
    "G\303\266r\303\274n\303\274m i\303\247erik y\303\274ksekli\304\237inden daha uzun oldu\304\237un"
    "da i\303\247eri\304\237in dikey konumu. 0,0 \303\274st, 0,5 orta, 1,0 alt anlam\304\261na gelir.",
    "En Boy Oran\304\261 '\303\226zel En Boy Oran\304\261' olarak ayarlanm\304\261\305\237sa kullan"
@@ -8979,6 +8977,7 @@ static const struct
    "resim indirmeleri zaten denendi.",
    "Atlanan \303\247ekirdekler: ",
    "\303\207ekirdekler g\303\274ncellendi: ",
+   "Men\303\274",
    "D\303\274z",
    "Klavye kaplamas\304\261 ayarlanmam\304\261\305\237.",
    "Kaydedilemedi. \303\226zelle\305\237tirmeler etkin.",
@@ -9177,7 +9176,7 @@ static const struct
  * compiler that pads this struct fails here instead of
  * misindexing at runtime. */
 typedef char msg_hash_tr_blob_check[
-      (sizeof(msg_hash_tr_blob) == (169296u
+      (sizeof(msg_hash_tr_blob) == (169135u
 #ifdef ANDROID
        + 340u
 #endif
@@ -9353,10 +9352,6 @@ typedef char msg_hash_tr_blob_check[
 #ifdef HAVE_ODROIDGO2
        + 20u
 #endif
-#if defined(RARCH_MOBILE)
-       + 49u
-       + 49u
-#endif
 #if defined (WIIU)
 #ifdef WIIU
        + 58u
@@ -9520,8 +9515,7 @@ typedef char msg_hash_tr_blob_check[
        + 67u
 #endif
 #if defined(RARCH_MOBILE)
-       + 152u
-       + 141u
+       + 127u
 #endif
 #if defined (WIIU)
 #ifdef WIIU
@@ -11654,9 +11648,16 @@ static const msg_hash_id_t msg_hash_tr_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_MESSAGE_POS_Y,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_MONITOR_INDEX,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_NOTCH_WRITE_OVER,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_PAUSE_ON,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_HIGH,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_LOW,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_MEDIUM,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_ALWAYS,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_AUTO,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_BEAM_ALWAYS,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_REFRESH_AUTO,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_TOUCH_HANDS_BOTH,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_TOUCH_HANDS_NONE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_ORIENTATION_FLIPPED,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_ORIENTATION_FLIPPED_ROTATED,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_ORIENTATION_VERTICAL,
@@ -11698,6 +11699,7 @@ static const msg_hash_id_t msg_hash_tr_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCAN_SUBFRAMES,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCREEN_LAYOUT_HORIZONTAL,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCREEN_LAYOUT_VERTICAL,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCREEN_XR_SCALE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SHADERS_ENABLE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SHADER_DELAY,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SHADER_DIR,
@@ -11738,10 +11740,6 @@ static const msg_hash_id_t msg_hash_tr_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_TEMPORAL_UPSCALER_QUALITY_BALANCED,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_TEMPORAL_UPSCALER_QUALITY_PERFORMANCE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_USE_METAL_ARG_BUFFERS,
-#if defined(RARCH_MOBILE)
-   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_BIAS_PORTRAIT_X,
-   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_BIAS_PORTRAIT_Y,
-#endif
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_BIAS_X,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_BIAS_Y,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_CUSTOM_HEIGHT,
@@ -11750,6 +11748,7 @@ static const msg_hash_id_t msg_hash_tr_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_CUSTOM_Y,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VI_WIDTH,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VSYNC,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VULKAN_DRIVER_PATH_SYSTEM,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_WAITABLE_SWAPCHAINS,
 #if defined (WIIU)
 #ifdef WIIU
@@ -11897,7 +11896,6 @@ static const msg_hash_id_t msg_hash_tr_ids[] =
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_BLUETOOTH_ERTM_DISABLE,
 #endif
 #endif
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_BLUETOOTH_SETTINGS,
 #ifdef _3DS
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_BOTTOM_ASSETS_DIRECTORY,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_BOTTOM_FONT_COLOR_BLUE,
@@ -12676,7 +12674,6 @@ static const msg_hash_id_t msg_hash_tr_ids[] =
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_LATENCY,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_LOGGING,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_NETWORK,
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_ONSCREEN_DISPLAY,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_PLAYLISTS,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_POWER_MANAGEMENT,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_RECORDING,
@@ -12866,10 +12863,8 @@ static const msg_hash_id_t msg_hash_tr_ids[] =
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_SYNCHRONIZATION_SETTINGS,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_USE_METAL_ARG_BUFFERS,
 #if defined(RARCH_MOBILE)
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_BIAS_PORTRAIT_X,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_BIAS_PORTRAIT_Y,
 #endif
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_BIAS_X,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_BIAS_Y,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_CUSTOM_HEIGHT,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_CUSTOM_WIDTH,
@@ -13284,6 +13279,7 @@ static const msg_hash_id_t msg_hash_tr_ids[] =
    (msg_hash_id_t)MSG_NO_THUMBNAIL_DOWNLOAD_POSSIBLE,
    (msg_hash_id_t)MSG_NUM_CORES_LOCKED,
    (msg_hash_id_t)MSG_NUM_CORES_UPDATED,
+   (msg_hash_id_t)MSG_OPENXR_EDIT_TAG_MENU,
    (msg_hash_id_t)MSG_OPENXR_HEADSET_VIEW_FLAT,
    (msg_hash_id_t)MSG_OSK_OVERLAY_NOT_SET,
    (msg_hash_id_t)MSG_OVERRIDES_ACTIVE_NOT_SAVING,

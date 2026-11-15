@@ -169,6 +169,12 @@ void audio_mixer_mix_s16(int16_t *buffer, size_t num_frames,
 {
    (void)buffer; (void)num_frames; (void)gain_override; (void)override;
 }
+void audio_mixer_mix_s16_over(int16_t *dst, const int16_t *base,
+      size_t num_frames, int32_t gain_override, bool override)
+{
+   memcpy(dst, base, num_frames * 2 * sizeof(int16_t));
+   audio_mixer_mix_s16(dst, num_frames, gain_override, override);
+}
 
 void audio_mixer_voice_set_volume(audio_mixer_voice_t *voice, float val)
 {
@@ -317,12 +323,11 @@ bool state_manager_frame_is_reversed(void) { return false; }
  * in a harness reports one. */
 struct defaults g_defaults;
 
-/* These fixtures have no wrapper worker; control runs synchronously. */
-void audio_thread_apply_control(void *data,
-      void (*control)(void *userdata), void *userdata)
+/* These fixtures have no wrapper worker: it is always parked. */
+bool audio_thread_parked(void *data)
 {
    (void)data;
-   if (control) control(userdata);
+   return true;
 }
 
 /* The driver exposes transport pause; these harnesses stub mixer I/O. */

@@ -811,6 +811,9 @@ static void xmb_free_node(xmb_node_t *node)
    node->fullpath = NULL;
    xmb_node_icons_free(node);
 
+   if (node->console_name)
+      free(node->console_name);
+
    free(node);
 }
 
@@ -1345,15 +1348,16 @@ XMB_NOINLINE static void xmb_render_messagebox_internal(
    int cursor_x                        = 0;
    struct menu_state *menu_st          = menu_state_get_ptr();
    bool confirm_dialog                 = (menu_st->dialog_st.confirm_cmd) ? true : false;
+   bool landscape                      = video_width >= video_height;
    bool input_dialog_display_kb        = false;
    size_t wrapped_len                  = 0;
    char wrapped_message[MENU_LABEL_MAX_LENGTH];
    char *lines[512];
    char *start, *nl, *end;
 
-   if ((usable_width = (int)video_width - (xmb->margins_dialog * 8)) < 1)
-      return;
-   usable_width = (usable_width < 300) ? 300 : usable_width;
+   usable_width = (int)video_width - (xmb->margins_dialog * (landscape ? 4 : 1));
+   if (usable_width < 1)
+      usable_width = video_width;
 
    wrapped_len = (xmb->word_wrap)(
          wrapped_message, sizeof(wrapped_message),
@@ -1612,7 +1616,7 @@ XMB_NOINLINE static void xmb_render_messagebox_internal(
             0.75f, 0.75f, 0.75f, 0.5f,
       };
       bool input_menu_swap_ok_cancel_buttons = video_info->input_menu_swap_ok_cancel_buttons;
-      const char *str_back                   = msg_hash_to_str(MENU_ENUM_LABEL_VALUE_BASIC_MENU_CONTROLS_BACK);
+      const char *str_back                   = msg_hash_to_str(MENU_ENUM_LABEL_VALUE_BASIC_MENU_CONTROLS_CANCEL);
       const char *str_ok                     = msg_hash_to_str(MENU_ENUM_LABEL_VALUE_BASIC_MENU_CONTROLS_OK);
       unsigned str_back_width                = font_driver_get_message_width(xmb->font, str_back, strlen(str_back), 1.0f);
       unsigned str_ok_width                  = font_driver_get_message_width(xmb->font, str_ok, strlen(str_ok), 1.0f);
@@ -4393,6 +4397,7 @@ static uintptr_t xmb_icon_get_id(xmb_handle_t *xmb,
       case MENU_ENUM_LABEL_FRAME_TIME_COUNTER_SETTINGS:
       case MENU_ENUM_LABEL_PLAYLIST_MANAGER_CLEAN_PLAYLIST:
       case MENU_ENUM_LABEL_PLAYLIST_MANAGER_REFRESH_PLAYLIST:
+      case MENU_ENUM_LABEL_PLAYLIST_MANAGER_REFRESH_ALL_PLAYLISTS:
       case MENU_ENUM_LABEL_CLOUD_SYNC_SETTINGS:
          return GFX_SURFACE_HANDLE(xmb->textures.list[XMB_TEXTURE_RELOAD]);
       case MENU_ENUM_LABEL_VRR_RUNLOOP_ENABLE:
@@ -4549,6 +4554,7 @@ static uintptr_t xmb_icon_get_id(xmb_handle_t *xmb,
       case MENU_ENUM_LABEL_INPUT_LIBRETRO_DEVICE:
       case MENU_ENUM_LABEL_INPUT_DEVICE_INDEX:
       case MENU_ENUM_LABEL_INPUT_RETROPAD_BINDS:
+      case MENU_ENUM_LABEL_INPUT_CONTROLLERS:
       case MENU_ENUM_LABEL_INPUT_USER_1_BINDS:
       case MENU_ENUM_LABEL_INPUT_USER_2_BINDS:
       case MENU_ENUM_LABEL_INPUT_USER_3_BINDS:
@@ -4725,6 +4731,8 @@ static uintptr_t xmb_icon_get_id(xmb_handle_t *xmb,
 #endif
       case MENU_ENUM_LABEL_NETPLAY_REQUEST_DEVICES:
          return GFX_SURFACE_HANDLE(xmb->textures.list[XMB_TEXTURE_SUBSETTING]);
+      case MENU_ENUM_LABEL_SETTINGS_SHOW_BLUETOOTH:
+         return GFX_SURFACE_HANDLE(xmb->textures.list[XMB_TEXTURE_BLUETOOTH]);
       case MENU_ENUM_LABEL_NETWORK_INFORMATION:
       case MENU_ENUM_LABEL_NETWORK_SETTINGS:
       case MENU_ENUM_LABEL_SETTINGS_SHOW_NETWORK:
@@ -5010,6 +5018,8 @@ static uintptr_t xmb_icon_get_id(xmb_handle_t *xmb,
          else if (strstr(enum_label, "_gun_")
                || strstr(enum_label, "_aim_"))
             return GFX_SURFACE_HANDLE(xmb->textures.list[XMB_TEXTURE_INPUT_LGUN]);
+         else if (strstr(enum_label, "_touchpad"))
+            return GFX_SURFACE_HANDLE(xmb->textures.list[XMB_TEXTURE_OVERLAY]);
          else if (string_starts_with_size(enum_label, "input_device_reserv", STRLEN_CONST("input_device_reserv")))
             return GFX_SURFACE_HANDLE(xmb->textures.list[XMB_TEXTURE_OVERRIDE]);
       }
@@ -6216,9 +6226,14 @@ static enum menu_action xmb_parse_menu_entry_action(
    struct menu_state   *menu_st = menu_state_get_ptr();
    menu_list_t *menu_list       = menu_st->entries.list;
 
-   if (xmb->is_file_list && !xmb->show_fullscreen_thumbnails
+   if ((xmb->is_file_list
+            || (xmb->is_playlist && action == MENU_ACTION_OK
+               && menu_media_selected_in_history(menu_st)))
+         && !xmb->show_fullscreen_thumbnails
          && (action == MENU_ACTION_OK || action == MENU_ACTION_SELECT || action == MENU_ACTION_START)
-         && menu_media_open_selected_file(menu_st, &xmb->thumbnails.left, &xmb->thumbnails.right))
+         && menu_media_open_selected_file(menu_st, &xmb->thumbnails.left, &xmb->thumbnails.right,
+               xmb->fullscreen_thumbnail_label,
+               sizeof(xmb->fullscreen_thumbnail_label)))
    {
       xmb->thumbnails.pending = XMB_PENDING_THUMBNAIL_NONE;
       xmb->fullscreen_thumbnails_available = true;
@@ -6230,9 +6245,9 @@ static enum menu_action xmb_parse_menu_entry_action(
          && menu_media_controls_action(&xmb->media, action,
             menu_driver_get_current_time()))
       return MENU_ACTION_NOOP;
-   if (xmb->is_file_list && xmb->show_fullscreen_thumbnails
-         && action == MENU_ACTION_OK
-         && menu_media_selected_is_viewable(menu_st))
+   if (xmb->show_fullscreen_thumbnails && action == MENU_ACTION_OK
+         && ((xmb->is_file_list && menu_media_selected_is_viewable(menu_st))
+            || (xmb->is_playlist && menu_media_selected_in_history(menu_st))))
       return MENU_ACTION_NOOP;
 
    /* Scan user inputs */
@@ -7361,9 +7376,13 @@ static void xmb_context_reset_internal(xmb_handle_t *xmb,
       }
    }
 
-   if (xmb->is_file_list && xmb->show_fullscreen_thumbnails
+   if (xmb->show_fullscreen_thumbnails
+         && (xmb->is_file_list
+            || (xmb->is_playlist && menu_media_selected_in_history(menu_st)))
          && menu_media_open_selected_file(menu_st,
-               &xmb->thumbnails.left, &xmb->thumbnails.right))
+               &xmb->thumbnails.left, &xmb->thumbnails.right,
+               xmb->fullscreen_thumbnail_label,
+               sizeof(xmb->fullscreen_thumbnail_label)))
       xmb->thumbnails.pending = XMB_PENDING_THUMBNAIL_NONE;
 
    /* Have to reset this, otherwise savestate
@@ -10060,9 +10079,13 @@ static void xmb_navigation_set(void *data, bool scroll)
 {
    xmb_handle_t *xmb = (xmb_handle_t*)data;
    xmb_selection_pointer_changed(xmb, scroll);
-   if (xmb->is_file_list && xmb->show_fullscreen_thumbnails
+   if (xmb->show_fullscreen_thumbnails
+         && (xmb->is_file_list || (xmb->is_playlist
+               && menu_media_selected_in_history(menu_state_get_ptr())))
          && menu_media_open_selected_file(menu_state_get_ptr(),
-               &xmb->thumbnails.left, &xmb->thumbnails.right))
+               &xmb->thumbnails.left, &xmb->thumbnails.right,
+               xmb->fullscreen_thumbnail_label,
+               sizeof(xmb->fullscreen_thumbnail_label)))
       xmb->thumbnails.pending = XMB_PENDING_THUMBNAIL_NONE;
 }
 

@@ -115,6 +115,12 @@ typedef struct core_backup_handle
    char *staged_path;
    intfstream_t *core_file;
    intfstream_t *backup_file;
+   /* A copy that needs no decoding or encoding - restoring an
+    * uncompressed backup, or backing up where backups are not
+    * compressed - goes through the VFS copy instead of the two
+    * streams: the platform's own primitive, so on Linux and APFS no
+    * byte passes through the transfer buffer.  NULL otherwise. */
+   struct retro_vfs_copy_handle *copy;
    /* Transfer buffer, allocated once.  CORE_BACKUP_CHUNK_SIZE is far
     * too large to sit on the stack of a task handler, which may be
     * running on the task thread. */
@@ -152,6 +158,13 @@ typedef struct core_backup_handle
  * core_path for as long as the task is findable. */
 static void core_backup_handle_release_io(core_backup_handle_t *backup_handle)
 {
+   /* Cancels a copy still running and removes its partial file */
+   if (backup_handle->copy)
+   {
+      filestream_copy_close(backup_handle->copy);
+      backup_handle->copy = NULL;
+   }
+
    if (backup_handle->core_file)
    {
       intfstream_close(backup_handle->core_file);
@@ -177,6 +190,35 @@ static void core_backup_handle_release_io(core_backup_handle_t *backup_handle)
       free(backup_handle->buffer);
       backup_handle->buffer = NULL;
    }
+}
+
+/* Bytes offered to one step of the copy; the I/O window decides how
+ * many steps a tick gets. */
+#define CORE_BACKUP_COPY_STEP (1024 * 1024)
+
+/* Runs @backup_handle's copy while the shared I/O window allows.
+ * Returns RETRO_VFS_COPY_RUNNING to come back next tick, otherwise
+ * DONE or FAILED with the handle closed. */
+static int core_backup_copy_run(core_backup_handle_t *backup_handle)
+{
+   int status = RETRO_VFS_COPY_RUNNING;
+   int64_t done = 0;
+   nbio_budget_t budget;
+
+   task_nbio_slice_open(&budget);
+   while (     status == RETRO_VFS_COPY_RUNNING
+         &&    task_nbio_slice_within_budget(&budget, 0, 0))
+      status = filestream_copy_step(backup_handle->copy,
+            CORE_BACKUP_COPY_STEP, &done, NULL);
+   task_nbio_slice_close(&budget);
+
+   backup_handle->file_data_read = done;
+   if (status == RETRO_VFS_COPY_RUNNING)
+      return status;
+   if (filestream_copy_close(backup_handle->copy) != 0)
+      status = RETRO_VFS_COPY_FAILED;
+   backup_handle->copy = NULL;
+   return status;
 }
 
 static void free_core_backup_handle(core_backup_handle_t *backup_handle)
@@ -297,6 +339,13 @@ static bool task_core_backup_finder(retro_task_t *task, void *user_data)
        && (task->handler != task_core_restore_handler))
       return false;
 
+   /* A finished backup or restore has done its file work, though it
+    * stays in the queue until its callback has run: a second one of
+    * the same core pushed meanwhile was refused without a word. Passed
+    * over before its handle is read, which may already be gone. */
+   if (task_get_flags(task) & RETRO_TASK_FLG_FINISHED)
+      return false;
+
    backup_handle = (core_backup_handle_t*)task->state;
    if (!backup_handle)
       return false;
@@ -312,6 +361,29 @@ static bool task_core_backup_finder(retro_task_t *task, void *user_data)
       return false;
 
    return string_is_equal(core_filename_a, core_filename_b);
+}
+
+/* Concurrent backup/restore tasks for the same core are not allowed:
+ * true when one is running, and the user is told rather than the
+ * Backup or Restore entry doing nothing. */
+static bool task_core_backup_busy(const char *core_path)
+{
+   task_finder_data_t find_data;
+   find_data.func     = task_core_backup_finder;
+   find_data.userdata = (void*)core_path;
+
+   if (task_queue_find(&find_data))
+   {
+      char msg[128];
+      size_t _len = strlcpy(msg,
+            msg_hash_to_str(MSG_CORE_BACKUP_IN_PROGRESS), sizeof(msg));
+      strlcpy(msg + _len, path_basename(core_path), sizeof(msg) - _len);
+      RARCH_LOG("[Core Backup] %s\n", msg);
+      runloop_msg_queue_push(msg, strlen(msg), 1, 100, true, NULL,
+            MESSAGE_QUEUE_ICON_DEFAULT, MESSAGE_QUEUE_CATEGORY_INFO);
+      return true;
+   }
+   return false;
 }
 
 /***************/
@@ -343,7 +415,7 @@ static void task_core_backup_handler(retro_task_t *task)
          backup_handle->core_file = intfstream_open_file(
                backup_handle->core_path,
                RETRO_VFS_FILE_ACCESS_READ,
-               RETRO_VFS_FILE_ACCESS_HINT_NONE);
+               RETRO_VFS_FILE_ACCESS_HINT_SEQUENTIAL_BULK);
 
          if (!backup_handle->core_file)
          {
@@ -520,7 +592,7 @@ static void task_core_backup_handler(retro_task_t *task)
                if (!(backup_handle->core_file = intfstream_open_file(
                            backup_handle->core_path,
                            RETRO_VFS_FILE_ACCESS_READ,
-                           RETRO_VFS_FILE_ACCESS_HINT_NONE)))
+                           RETRO_VFS_FILE_ACCESS_HINT_SEQUENTIAL_BULK)))
                {
                   backup_handle->status = CORE_BACKUP_END;
                   break;
@@ -532,11 +604,24 @@ static void task_core_backup_handler(retro_task_t *task)
             backup_handle->backup_file = intfstream_open_rzip_file(
                   backup_handle->backup_path, RETRO_VFS_FILE_ACCESS_WRITE);
 #else
-            backup_handle->backup_file = intfstream_open_file(
-                  backup_handle->backup_path, RETRO_VFS_FILE_ACCESS_WRITE,
-                  RETRO_VFS_FILE_ACCESS_HINT_NONE);
+            /* An uncompressed backup is a plain copy of the core */
+            if ((backup_handle->copy = filestream_copy_begin(
+                        backup_handle->core_path, backup_handle->backup_path,
+                        RETRO_VFS_COPY_OVERWRITE)))
+            {
+               if (backup_handle->core_file)
+               {
+                  intfstream_close(backup_handle->core_file);
+                  free(backup_handle->core_file);
+                  backup_handle->core_file = NULL;
+               }
+            }
+            else
+               backup_handle->backup_file = intfstream_open_file(
+                     backup_handle->backup_path, RETRO_VFS_FILE_ACCESS_WRITE,
+                     RETRO_VFS_FILE_ACCESS_HINT_SEQUENTIAL_BULK);
 #endif
-            if (!backup_handle->backup_file)
+            if (!backup_handle->backup_file && !backup_handle->copy)
             {
                RARCH_ERR("[Core Backup] Failed to open core backup file: \"%s\".\n",
                      backup_handle->backup_path);
@@ -566,6 +651,30 @@ static void task_core_backup_handler(retro_task_t *task)
             nbio_budget_t budget;
             bool failed_read     = false;
             bool failed_write    = false;
+
+            if (backup_handle->copy)
+            {
+               int status = core_backup_copy_run(backup_handle);
+               if (status == RETRO_VFS_COPY_FAILED)
+               {
+                  RARCH_ERR("[Core Backup] Failed to copy core file: \"%s\".\n",
+                        backup_handle->core_path);
+                  task_free_error(task);
+                  task_set_error(task, strdup("Failed to write to core backup file."));
+                  backup_handle->status = CORE_BACKUP_END;
+               }
+               else if (status == RETRO_VFS_COPY_DONE)
+               {
+                  backup_handle->success = true;
+                  backup_handle->status  = (backup_handle->backup_mode ==
+                        CORE_BACKUP_MODE_AUTO) ?
+                              CORE_BACKUP_CHECK_HISTORY : CORE_BACKUP_END;
+               }
+               else
+                  task_set_progress(task, (int8_t)((backup_handle->file_data_read * 100)
+                        / backup_handle->core_file_size));
+               break;
+            }
 
             if (!backup_handle->buffer)
             {
@@ -843,7 +952,6 @@ static void *task_push_core_backup_internal(
       retro_task_callback_t cb, void *user_data)
 {
    size_t _len;
-   task_finder_data_t find_data;
    const char *core_name               = NULL;
    retro_task_t *task                  = NULL;
    core_backup_handle_t *backup_handle = NULL;
@@ -856,10 +964,7 @@ static void *task_push_core_backup_internal(
 
    /* Concurrent backup/restore tasks for the same core
     * are not allowed */
-   find_data.func     = task_core_backup_finder;
-   find_data.userdata = (void*)core_path;
-
-   if (task_queue_find(&find_data))
+   if (task_core_backup_busy(core_path))
       goto error;
 
    /* Get core name */
@@ -1039,7 +1144,7 @@ static void task_core_restore_handler(retro_task_t *task)
                    * task ticks. */
                   backup_handle->core_file = intfstream_open_file(
                         backup_handle->core_path, RETRO_VFS_FILE_ACCESS_READ,
-                        RETRO_VFS_FILE_ACCESS_HINT_NONE);
+                        RETRO_VFS_FILE_ACCESS_HINT_SEQUENTIAL_BULK);
 
                   if (!backup_handle->core_file)
                   {
@@ -1223,7 +1328,7 @@ static void task_core_restore_handler(retro_task_t *task)
 #else
             backup_handle->backup_file = intfstream_open_file(
                   backup_handle->backup_path, RETRO_VFS_FILE_ACCESS_READ,
-                  RETRO_VFS_FILE_ACCESS_HINT_NONE);
+                  RETRO_VFS_FILE_ACCESS_HINT_SEQUENTIAL_BULK);
 #endif
             if (!backup_handle->backup_file)
             {
@@ -1272,18 +1377,32 @@ static void task_core_restore_handler(retro_task_t *task)
             }
 #endif
             /* Open the temporary beside the core for writing; a
-             * stale one left by an interrupted restore goes first */
+             * stale one left by an interrupted restore goes first.
+             * An uncompressed backup - what installing a core update
+             * leaves, or any backup where they are not compressed - is
+             * a plain copy, done by the VFS copy into that temporary. */
             if (core_restore_set_write_paths(backup_handle))
             {
                if (path_is_valid(backup_handle->core_tmp_path))
                   filestream_delete(backup_handle->core_tmp_path);
-               backup_handle->core_file = intfstream_open_file(
-                     backup_handle->core_tmp_path,
-                     RETRO_VFS_FILE_ACCESS_WRITE,
-                     RETRO_VFS_FILE_ACCESS_HINT_NONE);
+               if (     !intfstream_is_compressed(backup_handle->backup_file)
+                     && (backup_handle->copy = filestream_copy_begin(
+                           backup_handle->backup_path,
+                           backup_handle->core_tmp_path,
+                           RETRO_VFS_COPY_OVERWRITE)))
+               {
+                  intfstream_close(backup_handle->backup_file);
+                  free(backup_handle->backup_file);
+                  backup_handle->backup_file = NULL;
+               }
+               else
+                  backup_handle->core_file = intfstream_open_file(
+                        backup_handle->core_tmp_path,
+                        RETRO_VFS_FILE_ACCESS_WRITE,
+                        RETRO_VFS_FILE_ACCESS_HINT_SEQUENTIAL_BULK);
             }
 
-            if (!backup_handle->core_file)
+            if (!backup_handle->core_file && !backup_handle->copy)
             {
                RARCH_ERR("[Core Restore] Failed to open core file: \"%s\".\n",
                      backup_handle->core_tmp_path
@@ -1318,6 +1437,37 @@ static void task_core_restore_handler(retro_task_t *task)
             nbio_budget_t budget;
             bool failed_read     = false;
             bool failed_write    = false;
+
+            if (backup_handle->copy)
+            {
+               int status = core_backup_copy_run(backup_handle);
+               if (status == RETRO_VFS_COPY_RUNNING)
+               {
+                  task_set_progress(task, (int8_t)((backup_handle->file_data_read * 100)
+                        / backup_handle->backup_file_size));
+                  break;
+               }
+               if (status == RETRO_VFS_COPY_FAILED)
+               {
+                  RARCH_ERR("[Core Restore] Failed to write to core file: \"%s\".\n",
+                        backup_handle->core_path);
+                  task_free_error(task);
+                  task_set_error(task, strdup("Failed to open core file."));
+               }
+               /* Complete: only now does it replace the core */
+               else if (filestream_rename(backup_handle->core_tmp_path,
+                        backup_handle->core_target_path) != 0)
+               {
+                  RARCH_ERR("[Core Restore] Failed to replace core file: \"%s\".\n",
+                        backup_handle->core_target_path);
+                  task_free_error(task);
+                  task_set_error(task, strdup("Failed to replace core file."));
+               }
+               else
+                  backup_handle->success = true;
+               backup_handle->status = CORE_RESTORE_END;
+               break;
+            }
 
             if (!backup_handle->buffer)
             {
@@ -1481,7 +1631,6 @@ bool task_push_core_restore(const char *backup_path, const char *dir_libretro,
       bool *core_loaded)
 {
    size_t _len;
-   task_finder_data_t find_data;
    enum core_backup_type backup_type;
    core_info_t *core_info              = NULL;
    const char *core_name               = NULL;
@@ -1567,10 +1716,7 @@ bool task_push_core_restore(const char *backup_path, const char *dir_libretro,
 
    /* Concurrent backup/restore tasks for the same core
     * are not allowed */
-   find_data.func     = task_core_backup_finder;
-   find_data.userdata = (void*)core_path;
-
-   if (task_queue_find(&find_data))
+   if (task_core_backup_busy(core_path))
       goto error;
 
    /* Configure handle */

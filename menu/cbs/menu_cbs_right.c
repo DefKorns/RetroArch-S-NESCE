@@ -40,6 +40,7 @@
 #include "../../file_path_special.h"
 #include "../../retroarch.h"
 #include "../../audio/audio_driver.h"
+#include "../../input/input_remapping.h"
 #include "../../verbosity.h"
 #include "../../msg_hash_lbl_str.h"
 #include "../../ui/ui_companion_driver.h"
@@ -141,6 +142,22 @@ static int action_right_cheat(unsigned type, const char *label,
 }
 #endif
 
+/* A controller's player, one up: 1 above Auto, Auto above Max Users. */
+static int action_right_input_plays_as(unsigned type, const char *label,
+      bool wraparound)
+{
+   unsigned row       = type - MENU_SETTINGS_INPUT_PLAYS_AS_BEGIN;
+   unsigned max_users = config_get_ptr()->uints.input_max_users;
+   unsigned player    = (row < MAX_INPUT_DEVICES)
+      ? input_config_plays_as_player(row)
+      : input_config_plays_as_entry_player(row - MAX_INPUT_DEVICES);
+
+   if (max_users > MAX_USERS)
+      max_users = MAX_USERS;
+   menu_input_plays_as_change(row, (player < max_users) ? player + 1 : 0);
+   return 0;
+}
+
 static int action_right_input_desc(unsigned type, const char *label,
       bool wraparound)
 {
@@ -152,7 +169,7 @@ static int action_right_input_desc(unsigned type, const char *label,
       unsigned bind_idx;
       unsigned user_idx    = (type - MENU_SETTINGS_INPUT_DESC_BEGIN) / RARCH_ANALOG_BIND_LIST_END;
       unsigned btn_idx     = (type - MENU_SETTINGS_INPUT_DESC_BEGIN) - RARCH_ANALOG_BIND_LIST_END * user_idx;
-      unsigned mapped_port = settings->uints.input_remap_ports[user_idx];
+      unsigned mapped_port = input_remapping_user_port(user_idx);
       unsigned remap_idx   = settings->uints.input_remap_ids[user_idx][btn_idx];
 
       if (mapped_port >= MAX_USERS)
@@ -236,6 +253,9 @@ static int action_right_scroll(unsigned type, const char *label,
    unsigned scroll_speed      = (unsigned)((MAX(scroll_accel, 2) - 2) / 4 + 1);
    unsigned fast_scroll_speed = 10 * scroll_speed;
    size_t entries_end         = MENU_LIST_GET_SELECTION(menu_list, 0)->size;
+
+   if (!config_get_ptr()->bools.menu_scroll_quick)
+      return 0;
 
    if (selection + fast_scroll_speed < entries_end)
    {
@@ -427,13 +447,15 @@ static int action_right_video_gpu_index(unsigned type, const char *label,
       {
          struct string_list *list = video_driver_get_gpu_api_devices(api);
 
-         if (list)
+         if (list && list->size)
          {
             settings_t *settings = config_get_ptr();
             if (settings->ints.vulkan_gpu_index <(int)(list->size - 1))
                settings->ints.vulkan_gpu_index++;
             else if (settings->ints.vulkan_gpu_index == (int)(list->size - 1))
                settings->ints.vulkan_gpu_index = 0;
+            video_driver_gpu_index_select(api,
+                  settings->ints.vulkan_gpu_index);
          }
 
          break;
@@ -445,13 +467,15 @@ static int action_right_video_gpu_index(unsigned type, const char *label,
       {
          struct string_list *list = video_driver_get_gpu_api_devices(api);
 
-         if (list)
+         if (list && list->size)
          {
             settings_t *settings = config_get_ptr();
             if (settings->ints.gl_gpu_index < (int)(list->size - 1))
                settings->ints.gl_gpu_index++;
             else
                settings->ints.gl_gpu_index = 0;
+            video_driver_gpu_index_select(api,
+                  settings->ints.gl_gpu_index);
          }
 
          break;
@@ -462,13 +486,15 @@ static int action_right_video_gpu_index(unsigned type, const char *label,
       {
          struct string_list *list = video_driver_get_gpu_api_devices(api);
 
-         if (list)
+         if (list && list->size)
          {
             settings_t *settings = config_get_ptr();
             if (settings->ints.d3d10_gpu_index < (int)(list->size - 1))
                settings->ints.d3d10_gpu_index++;
             else if (settings->ints.d3d10_gpu_index == (int)(list->size - 1))
                settings->ints.d3d10_gpu_index = 0;
+            video_driver_gpu_index_select(api,
+                  settings->ints.d3d10_gpu_index);
          }
 
          break;
@@ -479,13 +505,15 @@ static int action_right_video_gpu_index(unsigned type, const char *label,
       {
          struct string_list *list = video_driver_get_gpu_api_devices(api);
 
-         if (list)
+         if (list && list->size)
          {
             settings_t *settings = config_get_ptr();
             if (settings->ints.d3d11_gpu_index < (int)(list->size - 1))
                settings->ints.d3d11_gpu_index++;
             else if (settings->ints.d3d11_gpu_index == (int)(list->size - 1))
                settings->ints.d3d11_gpu_index = 0;
+            video_driver_gpu_index_select(api,
+                  settings->ints.d3d11_gpu_index);
          }
 
          break;
@@ -496,13 +524,15 @@ static int action_right_video_gpu_index(unsigned type, const char *label,
       {
          struct string_list *list = video_driver_get_gpu_api_devices(api);
 
-         if (list)
+         if (list && list->size)
          {
             settings_t *settings = config_get_ptr();
             if (settings->ints.d3d12_gpu_index < (int)(list->size - 1))
                settings->ints.d3d12_gpu_index++;
             else if (settings->ints.d3d12_gpu_index == (int)(list->size - 1))
                settings->ints.d3d12_gpu_index = 0;
+            video_driver_gpu_index_select(api,
+                  settings->ints.d3d12_gpu_index);
          }
 
          break;
@@ -513,13 +543,15 @@ static int action_right_video_gpu_index(unsigned type, const char *label,
       {
          struct string_list *list = video_driver_get_gpu_api_devices(api);
 
-         if (list)
+         if (list && list->size)
          {
             settings_t *settings = config_get_ptr();
             if (settings->ints.metal_gpu_index < (int)(list->size - 1))
                settings->ints.metal_gpu_index++;
             else if (settings->ints.metal_gpu_index == (int)(list->size - 1))
                settings->ints.metal_gpu_index = 0;
+            video_driver_gpu_index_select(api,
+                  settings->ints.metal_gpu_index);
          }
 
          break;
@@ -1248,6 +1280,11 @@ static int menu_cbs_init_bind_right_compare_type(menu_file_list_cbs_t *cbs,
          && type <= MENU_SETTINGS_INPUT_DESC_END)
    {
       BIND_ACTION_RIGHT(cbs, action_right_input_desc);
+   }
+   else if (type >= MENU_SETTINGS_INPUT_PLAYS_AS_BEGIN
+         && type <= MENU_SETTINGS_INPUT_PLAYS_AS_END)
+   {
+      BIND_ACTION_RIGHT(cbs, action_right_input_plays_as);
    }
    else if (type >= MENU_SETTINGS_INPUT_DESC_KBD_BEGIN
          && type <= MENU_SETTINGS_INPUT_DESC_KBD_END)

@@ -681,6 +681,14 @@ MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_INPUT_SELECT_RESERVED_DEVICE,
    "deferred_dropdown_box_list_input_select_reserved_device"
    )
+MSG_HASH(
+   MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_INPUT_PLAYS_AS,
+   "deferred_dropdown_box_list_input_plays_as"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_INPUT_PLAYS_AS_ADD,
+   "deferred_dropdown_box_list_input_plays_as_add"
+   )
 #ifdef ANDROID
 MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_DROPDOWN_BOX_LIST_INPUT_SELECT_PHYSICAL_KEYBOARD,
@@ -892,6 +900,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_INPUT_RETROPAD_BINDS_LIST,
    "deferred_input_retropad_binds"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_DEFERRED_INPUT_CONTROLLERS_LIST,
+   "deferred_input_controllers_list"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_INPUT_HOTKEY_BINDS_LIST,
@@ -1178,6 +1190,14 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_VIDEO_SCREEN_WINDOW_MONITOR,
    "video_screen%u_window_monitor"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_SCREEN_DISPLAY,
+   "video_screen%u_display"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_VIDEO_MENU_DISPLAY,
+   "video_menu_display"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_VIDEO_SYNCHRONIZATION_SETTINGS_LIST,
@@ -1486,6 +1506,14 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_INPUT_DEVICE_RESERVATION_TYPE,
    "input_device_reservation_type_p%u"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_PLAYS_AS,
+   "input_plays_as"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_INPUT_PLAYS_AS_ADD,
+   "input_plays_as_add"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_INPUT_MOUSE_INDEX,
@@ -1956,6 +1984,10 @@ MSG_HASH(
    "playlist_manager_refresh_playlist"
    )
 MSG_HASH(
+   MENU_ENUM_LABEL_PLAYLIST_MANAGER_REFRESH_ALL_PLAYLISTS,
+   "playlist_manager_refresh_all_playlists"
+   )
+MSG_HASH(
    MENU_ENUM_LABEL_PLAYLIST_SETTINGS_BEGIN,
    "playlist_settings_begin"
    )
@@ -2112,6 +2144,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_RDB_ENTRY_VEHICULAR,
    "rdb_entry_vehicular"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_RDB_ENTRY_TAGS,
+   "rdb_entry_tags"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_RDB_ENTRY_MAX_USERS,
@@ -3649,6 +3685,10 @@ MSG_HASH(
 MSG_HASH(
    MENU_ENUM_LABEL_DEFERRED_MANUAL_CONTENT_SCAN_LIST,
    "deferred_manual_content_scan_list"
+   )
+MSG_HASH(
+   MENU_ENUM_LABEL_DEFERRED_MANUAL_CONTENT_SCAN_DIR_LIST,
+   "deferred_manual_content_scan_dir_list"
    )
 MSG_HASH(
    MENU_ENUM_LABEL_MANUAL_CONTENT_SCAN_LIST,

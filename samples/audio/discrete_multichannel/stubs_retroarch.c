@@ -169,6 +169,12 @@ void audio_mixer_mix_s16(int16_t *buffer, size_t num_frames,
 {
    (void)buffer; (void)num_frames; (void)gain_override; (void)override;
 }
+void audio_mixer_mix_s16_over(int16_t *dst, const int16_t *base,
+      size_t num_frames, int32_t gain_override, bool override)
+{
+   memcpy(dst, base, num_frames * 2 * sizeof(int16_t));
+   audio_mixer_mix_s16(dst, num_frames, gain_override, override);
+}
 
 void audio_mixer_voice_set_volume(audio_mixer_voice_t *voice, float val)
 {
@@ -338,14 +344,14 @@ void runloop_msg_queue_push(const char *msg, size_t len, unsigned prio, unsigned
       bool flush, char *title, enum message_queue_icon icon, enum message_queue_category category)
 { (void)msg; (void)len; (void)prio; (void)duration; (void)flush; (void)title; (void)icon; (void)category; }
 
-/* These fixtures have no wrapper worker; control runs synchronously. */
+/* These fixtures have no wrapper worker: it is always parked. The
+ * count is of the wrapper's transactions, which ask. */
 unsigned transport_control_calls;
-void audio_thread_apply_control(void *data,
-      void (*control)(void *userdata), void *userdata)
+bool audio_thread_parked(void *data)
 {
    (void)data;
    transport_control_calls++;
-   if (control) control(userdata);
+   return true;
 }
 
 /* The driver exposes transport pause; these harnesses stub mixer I/O. */

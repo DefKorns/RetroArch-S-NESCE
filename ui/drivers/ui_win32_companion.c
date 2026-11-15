@@ -59,6 +59,7 @@
 #include <features/features_cpu.h>
 #include <file/file_path.h>
 #include <formats/image.h>
+#include <streams/image_texture_file.h>
 #include <lists/string_list.h>
 #include <compat/msvc.h>
 #include <string/stdstring.h>
@@ -4606,7 +4607,7 @@ static void cw_scan_directory(ui_companion_win32_wimp_t *w)
    if (companion_core_request_scan(w->core, dir))
       cw_status_set(w, "Scanning...");
    else
-      cw_status_set(w, "Scanning is not available in this build.");
+      cw_status_set(w, companion_core_scan_refusal());
 }
 
 static void cw_context_menu(ui_companion_win32_wimp_t *w, HWND from,

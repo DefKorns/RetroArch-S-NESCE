@@ -26,6 +26,7 @@
 #define CINTERFACE
 
 #include <formats/image.h>
+#include <streams/image_texture_file.h>
 #include <compat/strl.h>
 #include <compat/posix_string.h>
 #include <file/file_path.h>
@@ -1597,7 +1598,7 @@ static void d3d9_cg_font_render_msg(
    float line_height;
    d3d9_cg_font_t *font  = (d3d9_cg_font_t*)data;
    d3d9_video_t     *d3d   = (d3d9_video_t*)userdata;
-   unsigned          width  = 0;
+   float             width  = 0.0f;
    unsigned          height = 0;
 
    if (!d3d || !font || !msg || !*msg)
@@ -1609,6 +1610,7 @@ static void d3d9_cg_font_render_msg(
       return;
 
    font_driver_resolve_params(params, &rp);
+   width      = width / rp.x_scale;
    x          = rp.x;
    y          = rp.y;
    scale      = rp.scale;
@@ -4729,17 +4731,10 @@ static bool d3d9_cg_frame(void *data, const void *frame,
          &video_info->views_layout, d3d9_cg_views_allowed(d3d));
    if (!views_per_eye)
       d3d9_cg_vv_target_drop(d3d, &d3d->views.ui_target, &d3d->views.ui);
-   /* Drawn and composited only when there is UI; overlays are hidden.
-    * No directive inside the macro's arguments: MSVC's preprocessor
-    * takes it as tokens. */
-#ifdef HAVE_GFX_WIDGETS
+   /* Drawn and composited only when there is UI; overlays are hidden. */
    views_ui = VIDEO_VIEWS_UI_WANTED(views_per_eye,
          d3d->menu->enabled, msg, statistics_show,
-         widgets_active && gfx_widgets_visible(video_info))
-#else
-   views_ui = VIDEO_VIEWS_UI_WANTED(views_per_eye,
-         d3d->menu->enabled, msg, statistics_show, false)
-#endif
+         video_info->widgets_visible)
       && d3d->views.layer
       && d3d9_cg_vv_target_ensure(d3d, &d3d->views.ui_target,
             &d3d->views.ui, video_info->views_layout.ui_dims);

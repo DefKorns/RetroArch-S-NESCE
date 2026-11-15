@@ -2036,7 +2036,14 @@ static const struct
    char s_4b582a0c[28];
    char s_61213f1d[15];
    char s_95e4b29f[100];
+   char s_fa462638[11];
+   char s_29f97e35[8];
+   char s_569b0627[8];
+   char s_99b1b2f6[10];
    char s_60258de0[6];
+   char s_5410e874[6];
+   char s_d65a7d95[7];
+   char s_d6611158[9];
    char s_317b17ed[6];
    char s_94c8d15f[6];
    char s_de16b5d2[11];
@@ -2075,6 +2082,7 @@ static const struct
    char s_52e3d6ea[34];
    char s_2c868ae4[15];
    char s_9c535394[13];
+   char s_3253994e[8];
    char s_a9c8430e[14];
    char s_f5911f43[22];
    char s_9017e0d3[14];
@@ -2107,10 +2115,6 @@ static const struct
    char s_bddbac76[10];
    char s_482ee1f1[12];
    char s_214b7699[7];
-#if defined(RARCH_MOBILE)
-   char s_774121c7[62];
-   char s_774121c8[62];
-#endif
    char s_b0fb58d3[29];
    char s_b0fb58d4[29];
    char s_92a02470[35];
@@ -2119,6 +2123,7 @@ static const struct
    char s_8f379310[33];
    char s_6a9b757c[33];
    char s_6c52dfb1[35];
+   char s_334daaaa[8];
    char s_9119ef97[34];
 #if defined (WIIU)
 #ifdef WIIU
@@ -2259,7 +2264,6 @@ static const struct
    char s_aa08c6d6[78];
 #endif
 #endif
-   char s_27aef25c[49];
 #ifdef _3DS
    char s_2873cef1[84];
    char s_b4816da6[50];
@@ -2995,7 +2999,6 @@ static const struct
    char s_a55bf936[31];
    char s_c519f84d[40];
    char s_48aefa30[31];
-   char s_5d383a58[45];
    char s_dcf8bd8b[46];
    char s_bce9b94f[42];
    char s_d32f5a63[31];
@@ -3177,10 +3180,8 @@ static const struct
    char s_2e69508b[350];
    char s_7e96b5ce[40];
 #if defined(RARCH_MOBILE)
-   char s_82c9e375[169];
-   char s_82c9e376[152];
+   char s_82c9e376[130];
 #endif
-   char s_73658ec1[146];
    char s_73658ec2[130];
    char s_8010a29e[116];
    char s_81120e85[117];
@@ -6111,7 +6112,14 @@ static const struct
    "Index monitoru",
    "Povolen\303\255 zobrazen\303\255 na celou obrazovku p\305\231es notifikaci v za\305\231\303\255z"
    "en\303\255ch se syst\303\251mem Android a iOS",
+   "Pozastavit",
+   "Vysok\303\241",
+   "N\303\255zk\303\241",
+   "St\305\231edn\303\255",
    "V\305\276dy",
+   "V\305\276dy",
+   "Oboj\303\255",
+   "\305\275\303\241dn\303\251",
    "180\302\272",
    "270\302\272",
    "Norm\303\241ln\303\255",
@@ -6150,6 +6158,7 @@ static const struct
    "Simulace valiv\303\251 skenovac\303\255 linie",
    "Horizont\303\241ln\303\255",
    "Vertik\303\241ln\303\255",
+   "\305\240k\303\241la",
    "Shadery videa",
    "Prodleva auto-shaderu",
    "Shadery videa",
@@ -6183,10 +6192,6 @@ static const struct
    "V\303\275choz\303\255",
    "Vyv\303\241\305\276en\303\241",
    "V\303\275kon",
-#if defined(RARCH_MOBILE)
-   "P\305\231edsazen\303\255 kotvy panelu zobrazen\303\255 X (orientace na v\303\275\305\241ku)",
-   "P\305\231edsazen\303\255 kotvy panelu zobrazen\303\255 Y (orientace na v\303\275\305\241ku)",
-#endif
    "P\305\231edsazen\303\255 kotvy pohledu X",
    "P\305\231edsazen\303\255 kotvy pohledu Y",
    "Vlastn\303\255 pom\304\233r stran (na v\303\275\305\241ku)",
@@ -6195,6 +6200,7 @@ static const struct
    "Vlastn\303\255 pom\304\233r stran (poloha Y)",
    "Nastaven\303\255 \305\241\303\255\305\231ky obrazovky VI",
    "Vertik\303\241ln\303\255 synchronizace (VSync)",
+   "Syst\303\251m",
    "Vy\304\215k\303\241v\303\241n\303\255 v\303\275m\304\233ny \305\231et\304\233zc\305\257",
 #if defined (WIIU)
 #ifdef WIIU
@@ -6388,7 +6394,6 @@ static const struct
    "\275ch za\305\231\303\255zen\303\255",
 #endif
 #endif
-   "Vyhledejte za\305\231\303\255zen\303\255 Bluetooth a p\305\231ipojte je.",
 #ifdef _3DS
    "Adres\303\241\305\231 aktiv na spodn\303\255 obrazovce. Adres\303\241\305\231 mus\303\255 obsaho"
    "vat \"spodn\303\255_menu.png\".",
@@ -7791,7 +7796,6 @@ static const struct
    "Zobrazit nastaven\303\255 'Latence'.",
    "Zobrazit nastaven\303\255 'P\305\231ihla\305\241ov\303\241n\303\255'.",
    "Zobrazit nastaven\303\255 'S\303\255\305\245\304\233'.",
-   "Zobrazit nastaven\303\255 'Displeje na obrazovce'.",
    "Zobrazit nastaven\303\255 'Seznamu p\305\231ehr\303\241v\303\241n\303\255'.",
    "Zobrazit nastaven\303\255 'Spr\303\241va nap\303\241jen\303\255'.",
    "Zobrazit nastaven\303\255 'Z\303\241znam'.",
@@ -8122,16 +8126,10 @@ static const struct
    "ap\305\231. obsahu s 30 fps na displeji s 60 Hz nebo obsahu s 60 fps na displeji se 120 Hz.",
    "Zm\304\233nit nastaven\303\255 synchronizace videa.",
 #if defined(RARCH_MOBILE)
-   "Vodorovn\303\241 poloha obsahu, kdy\305\276 je zobrazovac\303\255 plocha \305\241ir\305\241\303"
-   "\255 ne\305\276 \305\241\303\255\305\231ka obsahu. 0,0 je zcela vlevo, 0,5 je uprost\305\231ed, "
-   "1,0 je zcela vpravo. (Orientace na v\303\275\305\241ku)",
    "Svisl\303\241 poloha obsahu, kdy\305\276 je zobrazovac\303\255 plocha vy\305\241\305\241\303\255"
    " ne\305\276 v\303\275\305\241ka obsahu. 0,0 je naho\305\231e, 0,5 je uprost\305\231ed, 1,0 je do"
-   "le (orientace na v\303\275\305\241ku)",
+   "le.",
 #endif
-   "Vodorovn\303\241 poloha obsahu, kdy\305\276 je zobrazovac\303\255 plocha \305\241ir\305\241\303"
-   "\255 ne\305\276 \305\241\303\255\305\231ka obsahu. 0,0 je zcela vlevo, 0,5 je uprost\305\231ed, "
-   "1,0 je zcela vpravo.",
    "Svisl\303\241 poloha obsahu, kdy\305\276 je zobrazovac\303\255 plocha vy\305\241\305\241\303\255"
    " ne\305\276 v\303\275\305\241ka obsahu. 0,0 je naho\305\231e, 0,5 je uprost\305\231ed, 1,0 je do"
    "le.",
@@ -8794,7 +8792,7 @@ static const struct
  * compiler that pads this struct fails here instead of
  * misindexing at runtime. */
 typedef char msg_hash_cs_blob_check[
-      (sizeof(msg_hash_cs_blob) == (161521u
+      (sizeof(msg_hash_cs_blob) == (161356u
 #ifdef ANDROID
        + 390u
 #endif
@@ -8962,10 +8960,6 @@ typedef char msg_hash_cs_blob_check[
        + 19u
 #endif
 #endif
-#if defined(RARCH_MOBILE)
-       + 62u
-       + 62u
-#endif
 #if defined (WIIU)
 #ifdef WIIU
        + 48u
@@ -9129,8 +9123,7 @@ typedef char msg_hash_cs_blob_check[
        + 69u
 #endif
 #if defined(RARCH_MOBILE)
-       + 169u
-       + 152u
+       + 130u
 #endif
 #if defined (WIIU)
 #ifdef WIIU
@@ -11181,7 +11174,14 @@ static const msg_hash_id_t msg_hash_cs_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_MESSAGE_POS_Y,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_MONITOR_INDEX,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_NOTCH_WRITE_OVER,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_PAUSE_ON,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_HIGH,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_LOW,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_MEDIUM,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_ALWAYS,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_BEAM_ALWAYS,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_TOUCH_HANDS_BOTH,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_TOUCH_HANDS_NONE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_ORIENTATION_FLIPPED,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_ORIENTATION_FLIPPED_ROTATED,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_ORIENTATION_NORMAL,
@@ -11220,6 +11220,7 @@ static const msg_hash_id_t msg_hash_cs_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCAN_SUBFRAMES,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCREEN_LAYOUT_HORIZONTAL,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCREEN_LAYOUT_VERTICAL,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCREEN_XR_SCALE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SHADERS_ENABLE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SHADER_DELAY,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SHADER_DIR,
@@ -11252,10 +11253,6 @@ static const msg_hash_id_t msg_hash_cs_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_TEMPORAL_UPSCALER_PRESET_DEFAULT,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_TEMPORAL_UPSCALER_QUALITY_BALANCED,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_TEMPORAL_UPSCALER_QUALITY_PERFORMANCE,
-#if defined(RARCH_MOBILE)
-   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_BIAS_PORTRAIT_X,
-   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_BIAS_PORTRAIT_Y,
-#endif
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_BIAS_X,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_BIAS_Y,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_CUSTOM_HEIGHT,
@@ -11264,6 +11261,7 @@ static const msg_hash_id_t msg_hash_cs_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_CUSTOM_Y,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VI_WIDTH,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VSYNC,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VULKAN_DRIVER_PATH_SYSTEM,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_WAITABLE_SWAPCHAINS,
 #if defined (WIIU)
 #ifdef WIIU
@@ -11404,7 +11402,6 @@ static const msg_hash_id_t msg_hash_cs_ids[] =
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_BLUETOOTH_ERTM_DISABLE,
 #endif
 #endif
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_BLUETOOTH_SETTINGS,
 #ifdef _3DS
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_BOTTOM_ASSETS_DIRECTORY,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_BOTTOM_FONT_COLOR_BLUE,
@@ -12140,7 +12137,6 @@ static const msg_hash_id_t msg_hash_cs_ids[] =
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_LATENCY,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_LOGGING,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_NETWORK,
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_ONSCREEN_DISPLAY,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_PLAYLISTS,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_POWER_MANAGEMENT,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_RECORDING,
@@ -12322,10 +12318,8 @@ static const msg_hash_id_t msg_hash_cs_ids[] =
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_SWAP_INTERVAL,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_SYNCHRONIZATION_SETTINGS,
 #if defined(RARCH_MOBILE)
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_BIAS_PORTRAIT_X,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_BIAS_PORTRAIT_Y,
 #endif
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_BIAS_X,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_BIAS_Y,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_CUSTOM_HEIGHT,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_CUSTOM_WIDTH,

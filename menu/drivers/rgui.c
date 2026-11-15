@@ -44,6 +44,7 @@
 
 #include "../menu_driver.h"
 #include "../menu_media_controls.h"
+#include "../menu_media_browser.h"
 #include "../../gfx/gfx_media_cpu.h"
 #include "../../gfx/gfx_surface.h"
 #include "../../gfx/gfx_animation.h"
@@ -5408,7 +5409,7 @@ static void rgui_render_messagebox(
 
       if (confirm_dialog)
       {
-         const char *str_back                   = msg_hash_to_str(MENU_ENUM_LABEL_VALUE_BASIC_MENU_CONTROLS_BACK);
+         const char *str_back                   = msg_hash_to_str(MENU_ENUM_LABEL_VALUE_BASIC_MENU_CONTROLS_CANCEL);
          const char *str_ok                     = msg_hash_to_str(MENU_ENUM_LABEL_VALUE_BASIC_MENU_CONTROLS_OK);
          size_t str_back_width                  = strlen(str_back) * rgui->font_width_stride;
          size_t str_ok_width                    = strlen(str_ok) * rgui->font_width_stride;
@@ -6139,14 +6140,17 @@ RGUI_NOINLINE static void rgui_media_subtitle_draw(rgui_t *rgui, unsigned dims)
       : (int)height - (int)rgui->font_height_stride;
    for (i = 0; i < count; i++)
    {
-      size_t glyphs = utf8len(lines[i]);
+      size_t len = utf8len(lines[i]);
+      unsigned glyphs;
       int x, y;
-      if (glyphs > columns)
+      if (len > columns)
       {
          char *end = (char*)utf8skip(lines[i], columns);
          *end = '\0';
          glyphs = columns;
       }
+      else
+         glyphs = (unsigned)len;
       x = (width - glyphs * rgui->font_width_stride) / 2;
       y = bottom - ((int)count - (int)i) * rgui->font_height_stride;
       if (y < (int)rgui->font_height_stride)
@@ -8479,6 +8483,26 @@ static void rgui_scan_selected_entry_thumbnail(rgui_t *rgui, bool force_load)
          has_thumbnail = true;
       }
    }
+   /* The open viewer shows an image history entry itself, whatever
+    * the playlist thumbnail settings */
+   if (     (rgui->flags & RGUI_FLAG_IS_PLAYLIST)
+         && (rgui->flags & RGUI_FLAG_SHOW_FULLSCREEN_THUMBNAIL))
+   {
+      char history_dir[DIR_MAX_LENGTH];
+      const char *image = menu_media_selected_history_image(menu_st);
+      if (image)
+      {
+         fill_pathname_basedir(history_dir, image, sizeof(history_dir));
+         if (gfx_thumbnail_set_content_image(menu_st->thumbnail_path_data,
+                  history_dir, path_basename(image)))
+         {
+            strlcpy(menu_st->thumbnail_path_data->right_path,
+                  menu_st->thumbnail_path_data->content_path,
+                  sizeof(menu_st->thumbnail_path_data->right_path));
+            has_thumbnail = true;
+         }
+      }
+   }
    if (has_thumbnail)
    {
       enum image_type_enum type = image_texture_get_type(menu_st->thumbnail_path_data->right_path);
@@ -9586,6 +9610,8 @@ static void rgui_context_reset(void *data, bool is_threaded)
    if (!disp_get_ptr()->dispctx)
       gfx_display_init_first_driver(disp_get_ptr(), is_threaded);
    video_driver_monitor_reset();
+   /* A new video driver holds no menu texture until the next upload */
+   disp_get_ptr()->flags |= GFX_DISP_FLAG_FB_DIRTY;
 }
 
 static void rgui_thumbnail_cycle_dupe(rgui_t *rgui)
@@ -9638,6 +9664,19 @@ static enum menu_action rgui_parse_menu_entry_action(
          if (fullscreen && action == MENU_ACTION_OK && viewable)
             return MENU_ACTION_NOOP;
       }
+   }
+
+   if (     (rgui->flags & RGUI_FLAG_IS_PLAYLIST)
+         && action == MENU_ACTION_OK
+         && menu_media_selected_in_history(menu_st))
+   {
+      if (!(rgui->flags & RGUI_FLAG_SHOW_FULLSCREEN_THUMBNAIL))
+      {
+         rgui_toggle_fs_thumbnail(rgui, config_get_ptr()->bools.menu_rgui_inline_thumbnails);
+         rgui_scan_selected_entry_thumbnail(rgui, true);
+         rgui->flags |= RGUI_FLAG_FORCE_REDRAW;
+      }
+      return MENU_ACTION_NOOP;
    }
 
    if (*rgui->media_requested_path)

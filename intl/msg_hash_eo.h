@@ -1157,7 +1157,6 @@ static const struct
    char s_5b3c8098[24];
    char s_ceb820ad[8];
    char s_63af41a7[25];
-   char s_a4b769ca[26];
 #ifdef HAVE_MIST
    char s_53788998[28];
 #endif
@@ -2266,10 +2265,20 @@ static const struct
    char s_4b582a0c[31];
    char s_61213f1d[15];
    char s_95e4b29f[70];
+   char s_fa462638[7];
+   char s_29f97e35[5];
+   char s_569b0627[8];
+   char s_99b1b2f6[10];
+   char s_569b11b0[12];
+   char s_328ddae3[12];
    char s_60258de0[6];
    char s_caf61308[10];
+   char s_5410e874[6];
+   char s_9eb59c3e[12];
    char s_34b2592a[12];
    char s_c7a27b20[10];
+   char s_d65a7d95[7];
+   char s_d6611158[7];
    char s_317b17ed[6];
    char s_94c8d15f[6];
    char s_de16b5d2[1];
@@ -2314,6 +2323,7 @@ static const struct
    char s_52e3d6ea[27];
    char s_2c868ae4[12];
    char s_9c535394[10];
+   char s_3253994e[6];
    char s_a9c8430e[18];
    char s_f5911f43[32];
    char s_9017e0d3[18];
@@ -2358,10 +2368,6 @@ static const struct
    char s_214b7699[11];
    char s_f90edcc2[55];
    char s_ad14307a[12];
-#if defined(RARCH_MOBILE)
-   char s_774121c7[57];
-   char s_774121c8[57];
-#endif
    char s_b0fb58d3[34];
    char s_b0fb58d4[34];
    char s_92a02470[30];
@@ -2370,6 +2376,7 @@ static const struct
    char s_8f379310[35];
    char s_6a9b757c[1];
    char s_6c52dfb1[21];
+   char s_334daaaa[8];
    char s_9119ef97[22];
 #if defined (WIIU)
 #ifdef WIIU
@@ -2527,7 +2534,6 @@ static const struct
    char s_aa08c6d6[68];
 #endif
 #endif
-   char s_27aef25c[49];
 #ifdef _3DS
    char s_2873cef1[82];
    char s_b4816da6[58];
@@ -3009,7 +3015,6 @@ static const struct
    char s_7963c9c6[65];
    char s_ee3a489b[52];
    char s_236bd8d5[54];
-   char s_87c7d8b8[108];
 #ifdef HAVE_MIST
    char s_40e907c6[57];
 #endif
@@ -3387,7 +3392,6 @@ static const struct
    char s_a55bf936[33];
    char s_c519f84d[31];
    char s_48aefa30[24];
-   char s_5d383a58[33];
    char s_dcf8bd8b[29];
    char s_bce9b94f[37];
    char s_d32f5a63[29];
@@ -3617,10 +3621,8 @@ static const struct
    char s_7e96b5ce[39];
    char s_c2314d30[210];
 #if defined(RARCH_MOBILE)
-   char s_82c9e375[183];
-   char s_82c9e376[173];
+   char s_82c9e376[151];
 #endif
-   char s_73658ec1[161];
    char s_73658ec2[151];
    char s_8010a29e[91];
    char s_81120e85[93];
@@ -4045,6 +4047,7 @@ static const struct
    char s_8ab54d62[78];
    char s_aa554847[23];
    char s_ac2c797c[23];
+   char s_c52621db[6];
    char s_3fe94404[6];
    char s_80528b14[38];
    char s_eae21890[36];
@@ -5550,7 +5553,6 @@ static const struct
    "Plirapidigo de rulumado",
    "Aspekto",
    "Montri \"Konfigurdosiero\"",
-   "Montri konfirmajn kadrojn",
 #ifdef HAVE_MIST
    "Montri \"Administri kernojn\"",
 #endif
@@ -6668,10 +6670,20 @@ static const struct
    "Pozicio de sciigoj (vertikala)",
    "Ekrana indekso",
    "Ebligi plenekranan re\304\235imon super \"no\304\211o\" en aparatoj Android kaj iOS",
+   "Pa\305\255zi",
+   "Alta",
+   "Malalta",
+   "Mezrapida",
+   "Malebligita",
+   "Malebligita",
    "\304\210iam",
    "A\305\255tomata",
+   "\304\210iam",
+   "Malebligita",
    "Malebligita",
    "A\305\255tomata",
+   "Amba\305\255",
+   "Neniom",
    "180\302\260",
    "270\302\260",
    "",
@@ -6716,6 +6728,7 @@ static const struct
    "Imito de rulanta skanlinio",
    "Horizontala",
    "Vertikala",
+   "Skalo",
    "Videaj ombrigiloj",
    "Prokrasti a\305\255tomatan ombrigilon",
    "Videaj ombrigiloj",
@@ -6760,10 +6773,6 @@ static const struct
    "Rendimento",
    "Uzi argumentajn bufrojn de Metal (bezonas restartigon)",
    "Malflagrilo",
-#if defined(RARCH_MOBILE)
-   "Videja biaso X por la ankropunkto (vertikala orienti\304\235o)",
-   "Videja biaso Y por la ankropunkto (vertikala orienti\304\235o)",
-#endif
    "Videja biaso X por la ankropunkto",
    "Videja biaso Y por la ankropunkto",
    "Propra bilda proporcio (alto)",
@@ -6772,6 +6781,7 @@ static const struct
    "Propra bilda proporcio (posicio Y)",
    "",
    "Vertikala sinkronigo",
+   "Sistemo",
    "Atendeblaj swapchains",
 #if defined (WIIU)
 #ifdef WIIU
@@ -6962,7 +6972,6 @@ static const struct
    "Malebligi ERTM de Bluetooth por ripari kupladon de kelkaj aparatoj.",
 #endif
 #endif
-   "Ser\304\211i aparatojn kun bluetooth kaj konekti ilin.",
 #ifdef _3DS
    "Havaja dosierujo de malsupra ekrano. Dosierujo devas inkluzivi \"bottom_menu.png\".",
    "Al\304\235ustigi la bluecon de la tiparo de la malsupra ekrano.",
@@ -7628,8 +7637,6 @@ static const struct
    "Maksimuma rapido de la kursoro kiam tenante direkton por rulumi.",
    "\305\234an\304\235i agordojn pri la aspekto de la menua ekrano.",
    "Montri la opcion \"Konfigurdosiero\" en la \304\210efa menuo.",
-   "Peti konfirmon anta\305\255 ol forlasi, reagordi a\305\255 fermi enhavon. Kiam malebligite, \304"
-   "\211i tiuj agojn okazos tuje.",
 #ifdef HAVE_MIST
    "Montri la opcion \"Administri kernojn\" en la \304\211efa menuo.",
 #endif
@@ -8171,7 +8178,6 @@ static const struct
    "Montri agordojn \"Respondotempo\".",
    "Montri agordojn \"Protokolado\".",
    "Montri agordojn \"Reto\".",
-   "Montri agordojn \"Surekrana\304\265oj\".",
    "Montri agordojn \"Ludlistoj\".",
    "Montri agordojn \"Kurentomastrumado\".",
    "Montri agordojn \"Surbendigo\"",
@@ -8503,14 +8509,9 @@ static const struct
    "\211i tion. \304\210i tio povas \"rompi\" kelkajn ombrigilojn, \304\211efe en kadukaj aparataroj"
    " a\305\255 malnovaj versioj de operaciumoj.",
 #if defined(RARCH_MOBILE)
-   "Horizontala pozicio de la enhavo kiam la videjo estas pli lar\304\235a ol la lar\304\235o de la "
-   "enhavo. 0.0 estas plej maldekstre, 0.5 estas centro, 1.0 estas plej dekstre. Vertikala orienti"
-   "\304\235o.",
    "Vertikala pozicio de la enhavo kiam la videjo estas pli alta ol la alto de la enhavo. 0.0 estas "
-   "plej supre, 0.5 estas centro, 1.0 estas plej malsupre. Vertikala orienti\304\235o.",
+   "plej supre, 0.5 estas centro, 1.0 estas plej malsupre.",
 #endif
-   "Horizontala pozicio de la enhavo kiam la videjo estas pli lar\304\235a ol la lar\304\235o de la "
-   "enhavo. 0.0 estas plej maldekstre, 0.5 estas centro, 1.0 estas plej dekstre.",
    "Vertikala pozicio de la enhavo kiam la videjo estas pli alta ol la alto de la enhavo. 0.0 estas "
    "plej supre, 0.5 estas centro, 1.0 estas plej malsupre.",
    "Propra videja alto uzata se la Bilda proporcio estas agordita al \"Propra bilda proporcio\".",
@@ -8966,6 +8967,7 @@ static const struct
    "\304\210iuj eblaj el\305\235utoj de bildetoj jam estis provitaj por \304\211i tiu ludlista ero.",
    "Kernoj preterlasitaj: ",
    "Kernoj \304\235isdatigitaj: ",
+   "Menuo",
    "Plata",
    "Klavara surmeta\304\265o ne estas agordita.",
    "Ne konservante. Transpasoj aktivas.",
@@ -9146,7 +9148,7 @@ static const struct
  * compiler that pads this struct fails here instead of
  * misindexing at runtime. */
 typedef char msg_hash_eo_blob_check[
-      (sizeof(msg_hash_eo_blob) == (170716u
+      (sizeof(msg_hash_eo_blob) == (170445u
 #ifdef ANDROID
        + 312u
 #endif
@@ -9363,10 +9365,6 @@ typedef char msg_hash_eo_blob_check[
 #ifdef HAVE_ODROIDGO2
        + 12u
 #endif
-#if defined(RARCH_MOBILE)
-       + 57u
-       + 57u
-#endif
 #if defined (WIIU)
 #ifdef WIIU
        + 57u
@@ -9559,8 +9557,7 @@ typedef char msg_hash_eo_blob_check[
        + 60u
 #endif
 #if defined(RARCH_MOBILE)
-       + 183u
-       + 173u
+       + 151u
 #endif
 #if defined (WIIU)
 #ifdef WIIU
@@ -10734,7 +10731,6 @@ static const msg_hash_id_t msg_hash_eo_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_MENU_SCROLL_FAST,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_MENU_SETTINGS,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_MENU_SHOW_CONFIGURATIONS,
-   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_MENU_SHOW_CONFIRM,
 #ifdef HAVE_MIST
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_MENU_SHOW_CORE_MANAGER_STEAM,
 #endif
@@ -11842,10 +11838,20 @@ static const msg_hash_id_t msg_hash_eo_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_MESSAGE_POS_Y,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_MONITOR_INDEX,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_NOTCH_WRITE_OVER,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_PAUSE_ON,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_HIGH,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_LOW,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_MEDIUM,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_OFF,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SNAP_ANGLES_OFF,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_ALWAYS,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_AUTO,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_BEAM_ALWAYS,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_BEAM_OFF,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_OFF,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_REFRESH_AUTO,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_TOUCH_HANDS_BOTH,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_TOUCH_HANDS_NONE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_ORIENTATION_FLIPPED,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_ORIENTATION_FLIPPED_ROTATED,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_ORIENTATION_NORMAL,
@@ -11890,6 +11896,7 @@ static const msg_hash_id_t msg_hash_eo_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCAN_SUBFRAMES,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCREEN_LAYOUT_HORIZONTAL,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCREEN_LAYOUT_VERTICAL,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCREEN_XR_SCALE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SHADERS_ENABLE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SHADER_DELAY,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SHADER_DIR,
@@ -11934,10 +11941,6 @@ static const msg_hash_id_t msg_hash_eo_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_TEMPORAL_UPSCALER_QUALITY_PERFORMANCE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_USE_METAL_ARG_BUFFERS,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VFILTER,
-#if defined(RARCH_MOBILE)
-   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_BIAS_PORTRAIT_X,
-   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_BIAS_PORTRAIT_Y,
-#endif
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_BIAS_X,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_BIAS_Y,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_CUSTOM_HEIGHT,
@@ -11946,6 +11949,7 @@ static const msg_hash_id_t msg_hash_eo_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_CUSTOM_Y,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VI_WIDTH,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VSYNC,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VULKAN_DRIVER_PATH_SYSTEM,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_WAITABLE_SWAPCHAINS,
 #if defined (WIIU)
 #ifdef WIIU
@@ -12103,7 +12107,6 @@ static const msg_hash_id_t msg_hash_eo_ids[] =
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_BLUETOOTH_ERTM_DISABLE,
 #endif
 #endif
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_BLUETOOTH_SETTINGS,
 #ifdef _3DS
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_BOTTOM_ASSETS_DIRECTORY,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_BOTTOM_FONT_COLOR_BLUE,
@@ -12585,7 +12588,6 @@ static const msg_hash_id_t msg_hash_eo_ids[] =
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_MENU_SCROLL_FAST,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_MENU_SETTINGS,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_MENU_SHOW_CONFIGURATIONS,
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_MENU_SHOW_CONFIRM,
 #ifdef HAVE_MIST
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_MENU_SHOW_CORE_MANAGER_STEAM,
 #endif
@@ -12963,7 +12965,6 @@ static const msg_hash_id_t msg_hash_eo_ids[] =
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_LATENCY,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_LOGGING,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_NETWORK,
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_ONSCREEN_DISPLAY,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_PLAYLISTS,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_POWER_MANAGEMENT,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_RECORDING,
@@ -13193,10 +13194,8 @@ static const msg_hash_id_t msg_hash_eo_ids[] =
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_SYNCHRONIZATION_SETTINGS,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_USE_METAL_ARG_BUFFERS,
 #if defined(RARCH_MOBILE)
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_BIAS_PORTRAIT_X,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_BIAS_PORTRAIT_Y,
 #endif
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_BIAS_X,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_BIAS_Y,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_CUSTOM_HEIGHT,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_CUSTOM_WIDTH,
@@ -13621,6 +13620,7 @@ static const msg_hash_id_t msg_hash_eo_ids[] =
    (msg_hash_id_t)MSG_NO_THUMBNAIL_DOWNLOAD_POSSIBLE,
    (msg_hash_id_t)MSG_NUM_CORES_LOCKED,
    (msg_hash_id_t)MSG_NUM_CORES_UPDATED,
+   (msg_hash_id_t)MSG_OPENXR_EDIT_TAG_MENU,
    (msg_hash_id_t)MSG_OPENXR_HEADSET_VIEW_FLAT,
    (msg_hash_id_t)MSG_OSK_OVERLAY_NOT_SET,
    (msg_hash_id_t)MSG_OVERRIDES_ACTIVE_NOT_SAVING,

@@ -245,6 +245,10 @@ static const struct
    char s_ce997004[11];
 #endif
    char s_aa9bc75d[11];
+   char s_29f97e35[7];
+   char s_569b0627[6];
+   char s_d65a7d95[6];
+   char s_d6611158[7];
    char s_57665cff[6];
    char s_50eb4c56[7];
    char s_c2280f28[6];
@@ -257,6 +261,7 @@ static const struct
    char s_730df420[15];
    char s_bcddf275[12];
    char s_214b7699[12];
+   char s_334daaaa[7];
    char s_0f5266ce[15];
    char s_30140cb5[16];
    char s_65e6ea7c[7];
@@ -299,6 +304,7 @@ static const struct
    char s_46c57dde[55];
    char s_6e9f0493[55];
    char s_f7e279a6[11];
+   char s_c52621db[9];
    char s_3fe94404[13];
 } msg_hash_hr_blob =
 {
@@ -533,6 +539,10 @@ static const struct
    "Bilinearno",
 #endif
    "Automatski",
+   "Visoka",
+   "Niska",
+   "Oboje",
+   "Ni\305\241ta",
    "Izlaz",
    "Visoka",
    "Niska",
@@ -545,6 +555,7 @@ static const struct
    "Sinkronizacija",
    "Videozapisi",
    "Performanse",
+   "Sustav",
    "Visina prozora",
    "\305\240irina prozora",
    "Ni\305\241ta",
@@ -590,6 +601,7 @@ static const struct
    "Instaliraj ili vrati jezgru iz mape \342\200\236Preuzimanja\342\200\235.",
    "A\305\276uriraj sve instalirane jezgre na najnoviju verziju.",
    "Prevodilac",
+   "Izbornik",
    "Ravno (Flat)",
 };
 
@@ -597,7 +609,7 @@ static const struct
  * compiler that pads this struct fails here instead of
  * misindexing at runtime. */
 typedef char msg_hash_hr_blob_check[
-      (sizeof(msg_hash_hr_blob) == (4255u
+      (sizeof(msg_hash_hr_blob) == (4297u
 #ifdef HAVE_CDROM
 #ifdef HAVE_LAKKA
        + 12u
@@ -872,6 +884,10 @@ static const msg_hash_id_t msg_hash_hr_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_DINGUX_IPU_FILTER_BILINEAR,
 #endif
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_FRAME_DELAY_AUTOMATIC,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_HIGH,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_LOW,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_TOUCH_HANDS_BOTH,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_TOUCH_HANDS_NONE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OUTPUT_SETTINGS,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_RECORD_CONFIG_TYPE_RECORDING_HIGH_QUALITY,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_RECORD_CONFIG_TYPE_RECORDING_LOW_QUALITY,
@@ -884,6 +900,7 @@ static const msg_hash_id_t msg_hash_hr_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SYNCHRONIZATION_SETTINGS,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_TAB,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_TEMPORAL_UPSCALER_QUALITY_PERFORMANCE,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VULKAN_DRIVER_PATH_SYSTEM,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_WINDOW_HEIGHT,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_WINDOW_WIDTH,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_XMB_CURRENT_MENU_ICON_NONE,
@@ -926,5 +943,6 @@ static const msg_hash_id_t msg_hash_hr_ids[] =
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SIDELOAD_CORE_LIST,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_UPDATE_INSTALLED_CORES,
    (msg_hash_id_t)MSG_COMPILER,
+   (msg_hash_id_t)MSG_OPENXR_EDIT_TAG_MENU,
    (msg_hash_id_t)MSG_OPENXR_HEADSET_VIEW_FLAT,
 };

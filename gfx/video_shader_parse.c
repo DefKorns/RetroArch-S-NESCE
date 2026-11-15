@@ -1113,13 +1113,23 @@ static bool video_shader_cache_path(enum video_shader_cache_kind kind,
    switch (kind)
    {
       case VIDEO_SHADER_CACHE_SPIRV:
+      case VIDEO_SHADER_CACHE_VULKAN_PIPELINE:
          {
             settings_t *settings = config_get_ptr();
             if (!settings || !*settings->paths.directory_cache)
                return false;
-            fill_pathname_join_special(dir,
-                  settings->paths.directory_cache, "spirv", dir_len);
-            suffix = ".spirv";
+            if (kind == VIDEO_SHADER_CACHE_SPIRV)
+            {
+               fill_pathname_join_special(dir,
+                     settings->paths.directory_cache, "spirv", dir_len);
+               suffix = ".spirv";
+            }
+            else
+            {
+               fill_pathname_join_special(dir,
+                     settings->paths.directory_cache, "vkpipeline", dir_len);
+               suffix = ".bin";
+            }
          }
          break;
       case VIDEO_SHADER_CACHE_ORBIS_BINARY:
@@ -1992,7 +2002,7 @@ static bool video_shader_write_referenced_preset(
       const struct video_shader *shader,
       const char *path_to_save)
 {
-   size_t i;
+   size_t i, config_dir_len;
    char *buf;
    char *config_dir;
    char *path_to_ref;
@@ -2026,6 +2036,7 @@ static bool video_shader_write_referenced_preset(
 
    fill_pathname_application_special(config_dir, DIR_MAX_LENGTH,
          APPLICATION_SPECIAL_DIRECTORY_CONFIG);
+   config_dir_len = strlen(config_dir);
 
    if (!*shader->loaded_preset_path)
    {
@@ -2075,7 +2086,7 @@ static bool video_shader_write_referenced_preset(
    }
 
    if (      string_is_equal(path_to_ref, path_to_save_conformed)
-         || !strncmp(config_dir, path_to_ref, strlen(config_dir)))
+         || !strncmp(config_dir, path_to_ref, config_dir_len))
    {
       if (ref_conf->references)
       {

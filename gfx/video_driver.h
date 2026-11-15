@@ -190,7 +190,8 @@ enum video_driver_state_flags
    VIDEO_FLAG_FF_DECIDED                          = (1 << 25),
    /* main_flags: frames go to video_null.frame, whichever driver
     * is up (video_driver_set_stub_frame) */
-   VIDEO_FLAG_STUB_FRAME                          = (1 << 26)
+   VIDEO_FLAG_STUB_FRAME                          = (1 << 26),
+   VIDEO_FLAG_KEEP_VULKAN_SESSION                 = (1 << 27)
 };
 
 /* Driver pacing: the graphics driver releases each frame (NVIDIA
@@ -652,6 +653,7 @@ typedef struct video_frame_info
       float x;
       float y;
       float scale;
+      float x_scale;
       /* Drop shadow color multiplier. */
       float drop_mod;
       /* Drop shadow alpha */
@@ -681,6 +683,9 @@ typedef struct video_frame_info
    bool video_wiiu_prefer_drc;
 #endif
    bool widgets_active;
+   /* gfx_widgets_visible() for this frame, answered once on the thread
+    * that draws the widgets: whether the frame carries any of them */
+   bool widgets_visible;
    bool notifications_hidden;
    bool menu_mouse_enable;
    bool input_menu_swap_ok_cancel_buttons;
@@ -719,6 +724,8 @@ typedef struct video_frame_info
    /* The scale the worker lays the widgets out at, worked out from the
     * settings as the frame is built */
    float widget_scale_factor;
+   /* video_driver_ui_display_aspect() as the frame is built */
+   float widget_display_aspect;
 #ifdef HAVE_OPENXR
    /* 1 + the host's token for the eyes the core drew this frame from,
     * given on the drawing thread before it is drawn; 0 for none */
@@ -782,10 +789,14 @@ typedef struct video_frame_info
     * when the frame is drawn whole. */
    video_views_map_t views;
    video_views_layout_t views_layout;
-   /* The screens' own windows: NULL while they are off, the driver has
-    * none, or no views are presented. Owned by video_driver_state_t,
-    * or under the threaded wrapper by the frame's slot. */
+   /* The screens' own windows: NULL while they are off or the driver
+    * has none. Owned by video_driver_state_t, or under the threaded
+    * wrapper by the frame's slot. */
    const video_windows_frame_t *windows;
+   /* Each screen's placement from its menu rows, normalized. */
+   video_screen_xr_t headset_screens[RETRO_VIDEO_VIEWS_MAX];
+   /* The menu's own place, used once headset_menu_placed. */
+   video_screen_xr_t headset_menu;
    /* Headset output: the screens' distance and width in metres, where
     * they are kept (enum video_openxr_placement), and a count of
     * recenter requests the driver compares with the last it saw. */
@@ -793,6 +804,9 @@ typedef struct video_frame_info
    float headset_width;
    unsigned headset_placement;
    unsigned headset_recenter;
+   /* Edit mode's count of let-go grabs: a quad set planned with it
+    * shows them where the hands left them. */
+   unsigned headset_edit_seq;
    /* Each core frame shows for this many headset frames and waits for
     * them in place of the window's vsync; 0 while the window paces. */
    unsigned headset_interval;
@@ -800,8 +814,13 @@ typedef struct video_frame_info
    float headset_request_hz;
    unsigned screen_layout;
    bool stereo_swap_eyes;
+   bool headset_menu_placed;
+   /* An unplaced menu opens in front of screen 1, not at its spot. */
+   bool headset_menu_follow;
    /* The last frame sent again (paused, menu), not a new core frame. */
    bool frame_repeat;
+   /* Edit mode moves the headset's items: the menu's quad stays up. */
+   bool headset_editing;
    /* The tracked eyes' views, which the headset shows as its
     * projection; -1 while it shows none. */
    int headset_eye[2];
@@ -811,7 +830,8 @@ enum gfx_ctx_shared_kind
 {
    GFX_CTX_SHARED_NONE = 0,
    GFX_CTX_SHARED_EGL,
-   GFX_CTX_SHARED_GLX
+   GFX_CTX_SHARED_GLX,
+   GFX_CTX_SHARED_WGL
 };
 
 /* A second context in the window context's share group, for a thread
@@ -823,7 +843,7 @@ typedef struct gfx_ctx_shared_context
    enum gfx_ctx_shared_kind kind;
    void *display;          /* EGLDisplay, or the X Display */
    void *config;           /* EGLConfig, or GLXFBConfig */
-   void *context;          /* EGLContext, or GLXContext */
+   void *context;          /* EGLContext, GLXContext or HGLRC */
    void *surface;          /* EGL: its own pbuffer, NULL surfaceless */
    unsigned long drawable; /* GLX: its own pbuffer */
    unsigned visual_id;     /* GLX: the config's visual */
@@ -993,10 +1013,12 @@ typedef struct gfx_ctx_driver
    void (*release_current)(void *data);
 
    /* Optional, desktop GL: a context in the window context's share
-    * group (gfx_ctx_shared_context_t). New and free run on the video
-    * thread with the window's context current, and leave it so; bind
-    * and unbind run on the thread that uses the context, which never
-    * gets the window's surface. NULL where the driver has none. Placed
+    * group (gfx_ctx_shared_context_t). New and free run on a thread
+    * with a context of the group current - the video thread with the
+    * window's, or a hardware core's thread with the core's
+    * (RETRO_ENVIRONMENT_GET_HW_SHARED_CONTEXT_INTERFACE) - and leave it
+    * so; bind and unbind run on the thread that uses the context, which
+    * never gets the window's surface. NULL where the driver has none. Placed
     * last, as above. */
    bool (*shared_context_new)(void *data, gfx_ctx_shared_context_t *out);
    bool (*shared_context_bind)(gfx_ctx_shared_context_t *ctx, bool bind);
@@ -1625,6 +1647,9 @@ typedef struct video_driver
     * recording skip the BGR24 conversion. */
    bool (*read_viewport_bgrx)(void *data, uint8_t *buffer, bool is_idle,
          bool *bottom_up);
+
+   /* Software maxima may change within the initial input-scale capacity. */
+   bool max_geometry_in_place;
 } video_driver_t;
 
 #ifdef HAVE_OPENXR
@@ -1715,6 +1740,10 @@ typedef struct video_window_layout
    video_views_map_t core_map;
    unsigned core_dims;
    unsigned window_dims;
+   /* The display it was drawn on */
+   unsigned display;
+   /* The serial of the frame snapshot it was drawn from */
+   unsigned serial;
    unsigned generation;
 } video_window_layout_t;
 
@@ -1729,6 +1758,10 @@ typedef struct video_window_layouts
    unsigned next;                 /* the publisher's: slot to fill */
    unsigned last;                 /* the publisher's: slot + 1 */
    unsigned held;                 /* the main thread's: slot + 1 */
+   /* The main thread's: the serial of the snapshot that last asked
+    * for the window differently; a layout drawn before it is not
+    * shown */
+   unsigned from;
 } video_window_layouts_t;
 
 /* The platform's displays, handed over by index as the window layouts
@@ -1795,6 +1828,10 @@ typedef struct
    gfx_ctx_driver_t current_video_context;               /* ptr alignment */
    struct retro_hw_render_callback hw_render;            /* ptr alignment */
    struct rarch_dir_shader_list dir_shader_list;         /* ptr alignment */
+   /* VIDEO_CACHE_KEEPER of a thread whose retires leave the cached frame
+    * be: drawing a filter into lent memory, in which it never lies.
+    * Without threads the one thread is keeper 1 */
+   retro_atomic_size_t frame_cache_keeper;
 #ifdef HAVE_THREADS
    /* Whether the threaded video wrapper is installed. Its own storage
     * rather than a bit in ::flags, because the video thread reads it
@@ -1871,6 +1908,10 @@ typedef struct
     * with, and a read-modify-write of that word on the main thread
     * races such a read. */
    retro_atomic_int_t crt_switching_active;
+
+   /* Initial software-frame capacity, in pixels on each axis; zero opts out. */
+   unsigned max_geometry_capacity;
+   enum retro_pixel_format max_geometry_format;
 
 #ifdef HAVE_VIDEO_FILTER
    unsigned state_scale;
@@ -2021,6 +2062,10 @@ typedef struct
    unsigned driver_pacing_interval_us;
    uint8_t driver_pacing_mode;
    uint8_t driver_pacing_reason;
+   /* Skip Duplicate Frames: the core frames left before the runloop
+    * stops pacing for skipped repeats, rearmed by each one skipped.
+    * Main thread. */
+   uint8_t dupe_skip_hold;
 
    bool threaded;
 
@@ -2070,6 +2115,8 @@ typedef struct
    /* enum video_headset_view: the Headset View hotkey's choice, reset
     * when content closes. */
    unsigned headset_view;
+   /* Edit mode's let-go grabs, counted, main thread. */
+   unsigned headset_edit_seq;
    /* The headset's runtime asked RetroArch to exit (OpenXR EXITING). */
    retro_atomic_int_t headset_exit;
    /* Headset pacing, main thread, never saved: the headset's measured
@@ -2088,6 +2135,7 @@ typedef struct
    double headset_notice_fps;
    unsigned headset_notice_hz;
    bool headset_vsync;
+   bool headset_editing;
    /* Set while video_driver_cached_frame() sends the last frame again. */
    bool frame_repeat;
 #ifdef HAVE_VIDEO_WINDOWS
@@ -2105,6 +2153,15 @@ typedef struct
    /* The main thread's last route, which a redraw keeps; written only
     * when it changes, as Win32's redraws run beside the main thread */
    video_windows_route_t windows_route;
+   /* RetroArch's moves between displays; app thread */
+   video_windows_host_t windows_host;
+   /* Each UI layer's target as this frame laid it out, and the next */
+   video_window_ui_target_t windows_ui[VIDEO_WINDOW_UI_LAYERS];
+   /* When a UI layer's window was first wanted and had not shown; 0
+    * for none */
+   retro_time_t windows_ui_asked;
+   /* The Presentation's display windows_ui_asked counts for */
+   unsigned windows_ui_display;
    /* The last video_driver_window_generation(); never reset, so a
     * replacement window never reuses one. */
    retro_atomic_int_t window_generation;
@@ -2113,6 +2170,12 @@ typedef struct
    retro_atomic_int_t windows_failed;
    unsigned windows_forced_attached;
    unsigned windows_restore;
+   /* A bit a window id: those the last snapshot wanted, 0 while
+    * windows are off; main thread */
+   unsigned windows_wanted;
+   /* The serial of the snapshot the driver draws: the video thread's
+    * under the wrapper */
+   unsigned windows_drawn;
 #endif
 } video_driver_state_t;
 
@@ -2245,8 +2308,8 @@ bool video_driver_cached_frame_info(
  * callback returns, so keep it short -- but note that ordinary
  * frame publishing is never blocked by a reader.
  *
- * If every hazard slot is busy the callback is invoked with
- * data == NULL rather than waiting.
+ * If every hazard slot is busy or retirement races the read, the
+ * callback is invoked with data == NULL rather than waiting.
  */
 void video_driver_cached_frame_read(
       void *userdata,
@@ -2344,6 +2407,15 @@ const void *video_driver_convert_xrgb2101010(
       video_driver_state_t *video_st,
       const void *data, unsigned dims,
       size_t in_pitch, size_t *out_pitch);
+
+void video_driver_convert_xrgb2101010_into(void *output,
+      const void *data, unsigned dims, size_t in_pitch, size_t out_pitch);
+
+/* True holds a driver loan and the cached-frame keeper through frame(). */
+bool video_driver_convert_frame(video_driver_state_t *video_st,
+      const video_poke_interface_t *poke, void *driver_data,
+      enum retro_pixel_format format, const void **data,
+      unsigned dims, unsigned *pitch, bool allow_lend);
 
 /**
  * config_get_video_driver_options:
@@ -2471,6 +2543,23 @@ bool video_driver_views_status_changed(void);
 /* The size the menu and widgets lay out at: the output size, or one
  * eye's UI size when views are drawn side by side or top-bottom. */
 unsigned video_driver_get_ui_dims(void);
+
+/* Any thread: the size frame @video_info draws UI layer @layer at: its
+ * target's when drawn in another window, else the main window's UI
+ * size */
+unsigned video_frame_ui_layer_dims(const video_frame_info_t *video_info,
+      unsigned layer);
+
+/* App thread: the window UI layer @layer lays out for this frame, 0
+ * for the main window */
+unsigned video_driver_get_ui_layer_window(unsigned layer);
+
+/* App thread: the size UI layer @layer lays out at this frame */
+unsigned video_driver_get_ui_layer_dims(unsigned layer);
+
+/* Main thread: width over height of the screen the output fills when
+ * its pixels are not square (a CRT at a super resolution), or 0. */
+float video_driver_ui_display_aspect(void);
 /* Main thread: the layout the last frame presented a core's views
  * with, or NULL when it was drawn whole. */
 const video_views_layout_t *video_driver_get_views_layout(void);
@@ -2508,6 +2597,9 @@ void video_driver_headset_recenter(void);
  * video_headset_view and return it; VIDEO_HEADSET_VIEW_LAST, unchanged,
  * without a presenting headset. */
 unsigned video_driver_headset_view_toggle(void);
+/* Main thread: the headset's edit mode, on or off, and its count of
+ * let-go grabs, for the next frame snapshot. */
+void video_driver_headset_edit(bool editing, unsigned seq);
 /* Any thread: the headset's runtime asked RetroArch to exit. */
 void video_driver_headset_exit_request(void);
 
@@ -2535,6 +2627,45 @@ float video_driver_get_aspect_ratio(void);
 /* The aspect ratio, as the bits of the float in an atomic word. A
  * union, not a cast through a pointer, so it stays inside what the
  * standard allows and MSVC's aliasing rules. */
+
+/* Core frames a skipped repeat keeps the runloop's dupe-skip pacing on
+ * for: long enough to span the gaps between repeats down to 1 in 8. */
+#define VIDEO_DUPE_SKIP_HOLD 8
+
+#ifdef HAVE_THREADS
+#define VIDEO_CACHE_KEEPER ((size_t)sthread_get_current_thread_id())
+#else
+#define VIDEO_CACHE_KEEPER ((size_t)1)
+#endif
+
+/* Where a software filter draws: memory the driver lends, read back at
+ * cached speed as filters may, in the format and size of the frames it
+ * makes. NULL when there is none; *pitch is then left alone. */
+static INLINE void *video_driver_filter_lend(
+      const video_poke_interface_t *poke, void *driver_data,
+      unsigned dims, unsigned bpp, unsigned *pitch)
+{
+   struct retro_framebuffer fb;
+   if (     !poke || !poke->get_current_software_framebuffer || !driver_data)
+      return NULL;
+   fb.data         = NULL;
+   fb.width        = VIDEO_SCALE_W(dims);
+   fb.height       = VIDEO_SCALE_H(dims);
+   fb.pitch        = 0;
+   fb.format       = RETRO_PIXEL_FORMAT_UNKNOWN;
+   fb.access_flags = RETRO_MEMORY_ACCESS_READ | RETRO_MEMORY_ACCESS_WRITE;
+   fb.memory_flags = 0;
+   if (     !poke->get_current_software_framebuffer(driver_data, &fb)
+         || !fb.data
+         || !(fb.memory_flags & RETRO_MEMORY_TYPE_CACHED)
+         || fb.format != (bpp == sizeof(uint32_t)
+            ? RETRO_PIXEL_FORMAT_XRGB8888 : RETRO_PIXEL_FORMAT_RGB565)
+         || fb.pitch < (size_t)fb.width * bpp)
+      return NULL;
+   *pitch = (unsigned)fb.pitch;
+   return fb.data;
+}
+
 static INLINE float video_driver_aspect_ratio_of(
       const retro_atomic_int_t *bits)
 {
@@ -2613,6 +2744,8 @@ bool video_monitor_fps_statistics(double *refresh_rate,
  * coordinates based on viewport info. If report_oob is true,
  * -0x8000 will be returned for the coordinate which is offscreen,
  * otherwise offscreen coordinate is clamped to 0x7fff / -0x7fff.
+ * A window whose views layout shows no screen gives @res_pos -0x8000
+ * either way.
  *
  * Returns: true (1) if successful, false if video driver doesn't support
  * viewport info.
@@ -2723,7 +2856,23 @@ void video_driver_cache_context_ack_set(void);
  * restart - and the core has to be reset after all. True for a core
  * that holds none. */
 void video_driver_hw_render_interface_note(const struct retro_hw_render_interface *iface);
+
+/* RETRO_ENVIRONMENT_GET_HW_SHARED_CONTEXT_INTERFACE's answer: NULL when the
+ * core's context is not OpenGL or the context driver cannot make contexts
+ * in its share group. */
+const struct retro_hw_shared_context_interface
+      *video_driver_hw_shared_context_interface(void);
 bool video_driver_hw_render_interface_kept(void);
+/* Which of a GL driver's contexts a hardware core renders in: its own,
+ * shared with the driver's (@shared), or the driver's. Called by the
+ * driver once its context is up. When the context was kept across a
+ * restart but the core now renders in the other one, the objects it
+ * kept are not there: the kept-context acknowledgement is withdrawn, so
+ * the core is reset after all. */
+void video_driver_hw_context_shared_note(bool shared);
+/* The decision itself: the context the core rendered in before
+ * (-1 for none known, 0 the driver's, 1 its own) and the one now. */
+bool video_driver_hw_context_moved(int before, bool shared);
 bool video_driver_cache_context_ack_test(void);
 void video_driver_cache_context_ack_clear(void);
 
@@ -2927,6 +3076,9 @@ float video_driver_hdr_metadata_peak(float driver_value);
  */
 int video_driver_gpu_index_resolve(enum gfx_ctx_api api, int index,
       struct string_list *list);
+
+/* Remember an explicit choice from this API's current device list. */
+void video_driver_gpu_index_select(enum gfx_ctx_api api, int index);
 
 struct string_list* video_driver_get_gpu_api_devices(enum gfx_ctx_api api);
 

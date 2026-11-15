@@ -54,6 +54,7 @@
 #endif
 
 #include "audio/audio_driver.h"
+#include "input/input_remapping.h"
 #if defined(HAVE_CG) || defined(HAVE_GLSL) || defined(HAVE_SLANG) || defined(HAVE_HLSL)
 #include "gfx/video_shader_parse.h"
 #endif
@@ -282,7 +283,7 @@ static void network_command_reply(command_t *cmd,
 {
    command_network_t *netcmd = (command_network_t*)cmd->userptr;
    /* Respond (fire and forget since it's UDP) */
-   sendto(netcmd->net_fd, s, len, 0,
+   sendto(netcmd->net_fd, s, (int)len, 0,
       (struct sockaddr*)&netcmd->cmd_source, netcmd->cmd_source_len);
 }
 
@@ -310,7 +311,7 @@ static void network_command_reply_to(command_t *cmd, void *data,
 {
    command_network_t      *netcmd = (command_network_t*)cmd->userptr;
    command_network_dest_t *dest   = (command_network_dest_t*)data;
-   sendto(netcmd->net_fd, s, len, 0,
+   sendto(netcmd->net_fd, s, (int)len, 0,
       (struct sockaddr*)&dest->addr, dest->addr_len);
 }
 
@@ -1917,13 +1918,13 @@ static bool udp_send_packet(const char *host, uint16_t port, const char *msg)
 
    do
    {
-      int fd = socket(tmp_info->ai_family,
+      int fd = (int)socket(tmp_info->ai_family,
          tmp_info->ai_socktype, tmp_info->ai_protocol);
 
       if (fd < 0)
          continue;
 
-      if (sendto(fd, msg, len, 0, tmp_info->ai_addr, tmp_info->ai_addrlen) ==
+      if (sendto(fd, msg, (int)len, 0, tmp_info->ai_addr, (socklen_t)tmp_info->ai_addrlen) ==
             (ssize_t)len)
          ret = true;
 
@@ -1996,9 +1997,14 @@ bool command_network_send(const char *cmd_)
 
    if (port_str && *port_str)
    {
-      unsigned long val = strtoul(port_str, NULL, 0);
-      if (val > 0 && val <= 0xFFFF)
-         port = (uint16_t)val;
+      char *end;
+      unsigned long val = strtoul(port_str, &end, 0);
+      if (*end || !val || val > 0xFFFF)
+      {
+         RARCH_ERR("[NetCMD] Invalid port \"%s\".\n", port_str);
+         return false;
+      }
+      port = (uint16_t)val;
    }
 
    RARCH_LOG("[NetCMD] %s: \"%s\" to %s:%hu.\n",
@@ -6313,7 +6319,7 @@ void command_event_init_controllers(rarch_system_info_t *sys_info,
          if (i >= MAX_USERS)
             break;
 
-         if (port == settings->uints.input_remap_ports[i])
+         if (port == input_remapping_user_port((unsigned)i))
          {
             device = input_config_get_device(port);
             break;
@@ -7402,11 +7408,12 @@ bool command_event_main_state(unsigned cmd)
                      settings->uints.savestate_max_keep;
                bool frame_time_counter_auto_reset             =
                      settings->bools.frame_time_counter_auto_reset;
+               bool queued                                    = true;
 
                if (cmd == CMD_EVENT_SAVE_STATE)
                {
-                  bool queued = content_save_state(state_path, true);
-                  RARCH_LOG("[State] save dispatch for slot %d, path "
+                  queued = content_save_state(state_path, true);
+                  RARCH_LOG("[State] Save dispatch for slot %d, path "
                         "\"%s\": content_save_state queued=%s "
                         "(auto_index=%s, max_keep=%u). NOTE: actual disk "
                         "write is asynchronous; success is only known when "
@@ -7415,18 +7422,29 @@ bool command_event_main_state(unsigned cmd)
                         queued ? "yes" : "NO",
                         savestate_auto_index ? "on" : "off",
                         savestate_max_keep);
+                  /* Turned away - the saves and loads held behind the
+                   * one in flight are already at their bound: said,
+                   * rather than the hotkey doing nothing */
+                  if (!queued)
+                     _len = snprintf(msg, sizeof(msg), "%s \"%s\".",
+                           msg_hash_to_str(MSG_FAILED_TO_SAVE_STATE_TO),
+                           path_basename(state_path));
                }
                else
                   content_save_state_to_ram();
 
-               /* Clean up excess savestates if necessary */
-               if (savestate_auto_index && (savestate_max_keep > 0))
+               /* Clean up excess savestates if necessary: not for a
+                * save that was turned away, which wrote nothing */
+               if (     queued
+                     && savestate_auto_index && (savestate_max_keep > 0))
                   command_event_set_savestate_garbage_collect(settings);
 
                if (frame_time_counter_auto_reset)
                   video_st->frame_time_count = 0;
 
-               ret      = true;
+               /* false for a save turned away, so the caller can take
+                * back the slot it advanced for it */
+               ret      = queued;
             }
             break;
          case CMD_EVENT_LOAD_STATE:
@@ -7443,6 +7461,12 @@ bool command_event_main_state(unsigned cmd)
                   command_post_state_loaded();
                   ret = true;
                }
+               /* Turned away (the hold behind the state task in flight
+                * is full) or not begun: said, rather than nothing */
+               else if (cmd == CMD_EVENT_LOAD_STATE)
+                  _len = strlcpy(msg,
+                        msg_hash_to_str(MSG_FAILED_TO_LOAD_STATE),
+                        sizeof(msg));
             }
             break;
         case CMD_EVENT_UNDO_LOAD_STATE:
@@ -7545,7 +7569,8 @@ static void command_reinit_snapshot_cb(void *userdata,
    if (!*ctx->buf_p)
       return;
 
-   memcpy(*ctx->buf_p, data, want);
+   if (*ctx->buf_p != data)
+      memcpy(*ctx->buf_p, data, want);
    ctx->dims = dims;
    ctx->p    = pitch;
    ctx->size = want;
@@ -7624,6 +7649,7 @@ bool command_event_reinit(const int flags)
 
 
 
+   if (flags & DRIVER_VIDEO_AND_INPUT_MASK)
    {
       struct command_reinit_snapshot_ctx ctx;
       ctx.buf_p = &cached_snapshot;

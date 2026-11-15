@@ -76,7 +76,6 @@ enum thread_cmd
    CMD_POKE_SET_FBO_STATE,
    CMD_POKE_GET_FBO_STATE,
 
-   CMD_POKE_SET_ASPECT_RATIO,
    CMD_FONT_INIT,
    CMD_CUSTOM_COMMAND,
 
@@ -440,7 +439,6 @@ struct video_thread_menu_texture
 
 typedef struct thread_video
 {
-   retro_time_t last_time;
    /* Asynchronous texture uploads, see video_thread_async_post(). */
    struct
    {
@@ -514,10 +512,9 @@ typedef struct thread_video
 
    /* Display pacing. render_time is the video thread's moving average
     * of driver->frame(), video thread only and carried to the hold in
-    * the stats snapshot; core_time is the main thread's moving average
-    * of the time between one frame handoff's return and the next
-    * handoff's arrival, and run_start is when the last handoff
-    * returned. Both main-thread only. */
+    * the stats snapshot. Its main-thread counterparts, core_time and
+    * run_start (when the last handoff returned), are with the main
+    * thread's fields below pad_main. */
    retro_time_t render_time;
    retro_time_t present_wait; /* the wait in the driver's present, averaged as render_time is */
    retro_time_t fence_wait;   /* the frame fence waited out before it, averaged the same */
@@ -525,10 +522,14 @@ typedef struct thread_video
    retro_time_t slack_min;       /* the least a frame had to spare in the window */
    retro_time_t slack_window_at;  /* when the window began */
    unsigned miss_run;            /* frames in a row that missed their vblank */
-   retro_time_t core_time;
    /* The last frame presented had queued behind another: the next
     * hold runs a period longer to drain it. Video thread only. */
    unsigned drain_cooldown;
+   /* The view count the driver has, and a smaller one it takes once
+    * views_shrink_left more frames have drawn. Video thread only. */
+   unsigned views_count;
+   unsigned views_shrink_to;
+   unsigned views_shrink_left;
    /* Video thread sets it, the hold takes it with a fetch_and */
    retro_atomic_int_t drain_pending;
    retro_atomic_int_t movie_capable;
@@ -544,6 +545,16 @@ typedef struct thread_video
     * info at the push: the hold keeps the content's period over the
     * stopped core */
    bool menu_content_rate;
+   /* What the main thread writes every frame, kept off the lines the
+    * video thread writes (see VIDEO_THREAD_LINE): the push's clock and
+    * display pacing's moving averages and schedule, then the values it
+    * publishes for the video thread, on a line of their own. */
+   unsigned char pad_main[VIDEO_THREAD_LINE];
+   retro_time_t last_time;
+   /* core_time: the main thread's moving average of the time between
+    * one frame handoff's return and the next handoff's arrival; see
+    * render_time, its video thread counterpart. */
+   retro_time_t core_time;
    /* Display pacing's schedule: when the next content frame is due,
     * accumulated in the content's own period. Main thread. The
     * period itself is published for the video thread in
@@ -571,6 +582,14 @@ typedef struct thread_video
       bool counting;                       /* overlay was up last push */
       video_thread_handoff_stats_t last;
    } handoff;
+   unsigned char pad_main_pub[VIDEO_THREAD_LINE];
+   /* The main thread's inputs the video thread carries into the stats
+    * snapshot (core_time, display_pacing) and consults when it judges
+    * a queued frame (the content period), in microseconds. */
+   retro_atomic_int_t core_time_us;
+   retro_atomic_int_t display_pacing_pub;
+   retro_atomic_int_t content_period_us;
+   unsigned char pad_main_end[VIDEO_THREAD_LINE];
    bool display_pacing;
    bool present_repeat;
    /* Log the geometry clamp once per session, not per frame. */
@@ -582,12 +601,6 @@ typedef struct thread_video
    /* present_group while present_repeat, else 0: what present_last()
     * on the main thread answers with. Video thread publishes it. */
    retro_atomic_int_t repeat_group;
-   /* The main thread's inputs the video thread carries into the stats
-    * snapshot (core_time, display_pacing) and consults when it judges
-    * a queued frame (the content period), in microseconds. */
-   retro_atomic_int_t core_time_us;
-   retro_atomic_int_t display_pacing_pub;
-   retro_atomic_int_t content_period_us;
    /* What the hold adds to its margin for a driver whose present waits
     * for the vblank, in microseconds: written by the video thread, which
     * sees each frame's wait, and read by the hold. See
@@ -815,6 +828,8 @@ typedef struct thread_video
        * core's declared maximum geometry. A core that hands over a
        * larger frame than it declared is clamped to this. */
       size_t   buffer_size;
+      /* Main thread: buffer_size / current bytes per pixel. */
+      size_t   pixel_capacity;
       struct video_thread_frame_slot
       {
          video_thread_movie_t movie;
@@ -1003,6 +1018,10 @@ typedef struct thread_video
    unsigned char pad_ring[VIDEO_THREAD_LINE];
 
    retro_atomic_int_t deferred_tail;
+
+   unsigned char pad_aspect[VIDEO_THREAD_LINE];
+   /* Latest aspect index plus one; zero means no resize pending. */
+   retro_atomic_int_t aspect_ratio_pending;
 } thread_video_t;
 
 /**

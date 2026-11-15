@@ -2177,8 +2177,18 @@ static const struct
    char s_4b582a0c[39];
    char s_61213f1d[19];
    char s_95e4b29f[65];
+   char s_fa462638[6];
+   char s_29f97e35[5];
+   char s_569b0627[6];
+   char s_99b1b2f6[6];
+   char s_569b11b0[12];
+   char s_328ddae3[12];
    char s_60258de0[7];
+   char s_5410e874[7];
+   char s_9eb59c3e[12];
    char s_34b2592a[12];
+   char s_d65a7d95[9];
+   char s_d6611158[8];
    char s_317b17ed[10];
    char s_94c8d15f[10];
    char s_de16b5d2[8];
@@ -2222,6 +2232,7 @@ static const struct
    char s_52e3d6ea[41];
    char s_2c868ae4[12];
    char s_9c535394[10];
+   char s_3253994e[6];
    char s_a9c8430e[13];
    char s_f5911f43[20];
    char s_9017e0d3[14];
@@ -2260,10 +2271,6 @@ static const struct
    char s_214b7699[12];
    char s_f90edcc2[51];
    char s_ad14307a[21];
-#if defined(RARCH_MOBILE)
-   char s_774121c7[58];
-   char s_774121c8[58];
-#endif
    char s_b0fb58d3[33];
    char s_b0fb58d4[33];
    char s_92a02470[45];
@@ -2272,6 +2279,7 @@ static const struct
    char s_8f379310[48];
    char s_6a9b757c[40];
    char s_6c52dfb1[35];
+   char s_334daaaa[8];
    char s_9119ef97[18];
 #if defined (WIIU)
 #ifdef WIIU
@@ -2417,7 +2425,6 @@ static const struct
    char s_aa08c6d6[81];
 #endif
 #endif
-   char s_27aef25c[52];
 #ifdef _3DS
    char s_2873cef1[88];
    char s_b4816da6[55];
@@ -3236,7 +3243,6 @@ static const struct
    char s_a55bf936[34];
    char s_c519f84d[35];
    char s_48aefa30[34];
-   char s_5d383a58[47];
    char s_dcf8bd8b[32];
    char s_bce9b94f[52];
    char s_d32f5a63[43];
@@ -3462,10 +3468,8 @@ static const struct
    char s_7e96b5ce[50];
    char s_c2314d30[218];
 #if defined(RARCH_MOBILE)
-   char s_82c9e375[190];
-   char s_82c9e376[167];
+   char s_82c9e376[142];
 #endif
-   char s_73658ec1[167];
    char s_73658ec2[142];
    char s_8010a29e[112];
    char s_81120e85[114];
@@ -6422,8 +6426,18 @@ static const struct
    "Posizione Y delle notifiche su schermo",
    "Indice del monitor",
    "Abilita schermo intero sopra notch nei dispositivi Android e iOS",
+   "Pausa",
+   "Alta",
+   "Basso",
+   "Medio",
+   "Disattivato",
+   "Disattivato",
+   "Sempre",
    "Sempre",
    "Disattivato",
+   "Disattivato",
+   "Entrambi",
+   "Nessuno",
    "180 gradi",
    "270 gradi",
    "Normale",
@@ -6467,6 +6481,7 @@ static const struct
    "Simulazione di righe di scansione mobili",
    "Orizzontale",
    "Verticale",
+   "Scala",
    "Shader video",
    "Ritardo auto-shader",
    "Shaders video",
@@ -6505,10 +6520,6 @@ static const struct
    "Prestazioni",
    "Usa i buffer di argomenti Metal (richiede riavvio)",
    "Eliminazione flicker",
-#if defined(RARCH_MOBILE)
-   "Bias Di Ancoraggio Di Viewport X (Orientamento Verticale)",
-   "Bias Di Ancoraggio Di Viewport Y (Orientamento Verticale)",
-#endif
    "Bias Di Ancoraggio Di Viewport X",
    "Bias Di Ancoraggio Di Viewport Y",
    "Personalizza Rapporto d'aspetto (in Altezza)",
@@ -6517,6 +6528,7 @@ static const struct
    "Rapporto d'aspetto personalizzato (posizione Y)",
    "Impostare la larghezza dello schermo VI",
    "Sincronizzazione Verticale (VSync)",
+   "Sistema",
    "Swapchains Attivi",
 #if defined (WIIU)
 #ifdef WIIU
@@ -6690,7 +6702,6 @@ static const struct
    "Disabilita l'ERTM Bluetooth per correggere l'accoppiamento di alcuni dispositivi",
 #endif
 #endif
-   "Scansione per i dispositivi bluetooth e collegarli.",
 #ifdef _3DS
    "Directory asset nello schermo inferiore. La directory deve includere \"bottom_menu.png\".",
    "Regola il colore blu del font dello schermo inferiore.",
@@ -7849,7 +7860,6 @@ static const struct
    "Mostra le impostazioni 'Latenza'.",
    "Mostra le impostazioni 'Registri'.",
    "Mostra le impostazioni di 'Rete'.",
-   "Mostra le impostazioni di 'Display A Schermo'.",
    "Mostra impostazioni 'Playlist'.",
    "Mostra le impostazioni di 'Gestione Alimentazione'.",
    "Mostra le impostazioni di 'Registrazione'.",
@@ -8170,16 +8180,9 @@ static const struct
    " richiederli. Potrebbe compromettere alcuni shader, specialmente su hardware o versioni di siste"
    "ma operativo pi\303\271 datati.",
 #if defined(RARCH_MOBILE)
-   "Posizione orizzontale del contenuto quando la vista \303\250 pi\303\271 larga della larghezza de"
-   "l contenuto. 0.0 \303\250 lontano a sinistra, 0.5 \303\250 al centro, 1.0 \303\250 molto a destr"
-   "a. (Orientamento verticale)",
    "Posizione verticale del contenuto quando la vista \303\250 pi\303\271 alta dell'altezza del cont"
-   "enuto. 0.0 \303\250 in alto, 0.5 \303\250 al centro, 1.0 \303\250 in basso. (Orientamento vertic"
-   "ale)",
+   "enuto. 0.0 \303\250 in alto, 0.5 \303\250 al centro, 1.0 \303\250 in basso.",
 #endif
-   "Posizione orizzontale del contenuto quando la vista \303\250 pi\303\271 larga della larghezza de"
-   "l contenuto. 0.0 \303\250 lontano a sinistra, 0.5 \303\250 al centro, 1.0 \303\250 lontano a des"
-   "tra.",
    "Posizione verticale del contenuto quando la vista \303\250 pi\303\271 alta dell'altezza del cont"
    "enuto. 0.0 \303\250 in alto, 0.5 \303\250 al centro, 1.0 \303\250 in basso.",
    "Altezza di visualizzazione personalizzata utilizzata se il Rapporto d'aspetto \303\250 impostato"
@@ -8818,7 +8821,7 @@ static const struct
  * compiler that pads this struct fails here instead of
  * misindexing at runtime. */
 typedef char msg_hash_it_blob_check[
-      (sizeof(msg_hash_it_blob) == (182262u
+      (sizeof(msg_hash_it_blob) == (182093u
 #ifdef ANDROID
        + 376u
 #endif
@@ -9037,10 +9040,6 @@ typedef char msg_hash_it_blob_check[
 #ifdef HAVE_ODROIDGO2
        + 10u
 #endif
-#if defined(RARCH_MOBILE)
-       + 58u
-       + 58u
-#endif
 #if defined (WIIU)
 #ifdef WIIU
        + 54u
@@ -9233,8 +9232,7 @@ typedef char msg_hash_it_blob_check[
        + 56u
 #endif
 #if defined(RARCH_MOBILE)
-       + 190u
-       + 167u
+       + 142u
 #endif
 #if defined (WIIU)
 #ifdef WIIU
@@ -11426,8 +11424,18 @@ static const msg_hash_id_t msg_hash_it_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_MESSAGE_POS_Y,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_MONITOR_INDEX,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_NOTCH_WRITE_OVER,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_PAUSE_ON,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_HIGH,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_LOW,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_MEDIUM,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_OFF,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SNAP_ANGLES_OFF,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_ALWAYS,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_BEAM_ALWAYS,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_BEAM_OFF,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_OFF,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_TOUCH_HANDS_BOTH,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_TOUCH_HANDS_NONE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_ORIENTATION_FLIPPED,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_ORIENTATION_FLIPPED_ROTATED,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_ORIENTATION_NORMAL,
@@ -11471,6 +11479,7 @@ static const msg_hash_id_t msg_hash_it_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCAN_SUBFRAMES,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCREEN_LAYOUT_HORIZONTAL,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCREEN_LAYOUT_VERTICAL,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCREEN_XR_SCALE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SHADERS_ENABLE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SHADER_DELAY,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SHADER_DIR,
@@ -11509,10 +11518,6 @@ static const msg_hash_id_t msg_hash_it_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_TEMPORAL_UPSCALER_QUALITY_PERFORMANCE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_USE_METAL_ARG_BUFFERS,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VFILTER,
-#if defined(RARCH_MOBILE)
-   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_BIAS_PORTRAIT_X,
-   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_BIAS_PORTRAIT_Y,
-#endif
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_BIAS_X,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_BIAS_Y,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_CUSTOM_HEIGHT,
@@ -11521,6 +11526,7 @@ static const msg_hash_id_t msg_hash_it_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_CUSTOM_Y,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VI_WIDTH,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VSYNC,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VULKAN_DRIVER_PATH_SYSTEM,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_WAITABLE_SWAPCHAINS,
 #if defined (WIIU)
 #ifdef WIIU
@@ -11666,7 +11672,6 @@ static const msg_hash_id_t msg_hash_it_ids[] =
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_BLUETOOTH_ERTM_DISABLE,
 #endif
 #endif
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_BLUETOOTH_SETTINGS,
 #ifdef _3DS
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_BOTTOM_ASSETS_DIRECTORY,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_BOTTOM_FONT_COLOR_BLUE,
@@ -12485,7 +12490,6 @@ static const msg_hash_id_t msg_hash_it_ids[] =
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_LATENCY,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_LOGGING,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_NETWORK,
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_ONSCREEN_DISPLAY,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_PLAYLISTS,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_POWER_MANAGEMENT,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_RECORDING,
@@ -12711,10 +12715,8 @@ static const msg_hash_id_t msg_hash_it_ids[] =
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_SYNCHRONIZATION_SETTINGS,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_USE_METAL_ARG_BUFFERS,
 #if defined(RARCH_MOBILE)
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_BIAS_PORTRAIT_X,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_BIAS_PORTRAIT_Y,
 #endif
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_BIAS_X,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_BIAS_Y,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_CUSTOM_HEIGHT,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_VIDEO_VIEWPORT_CUSTOM_WIDTH,

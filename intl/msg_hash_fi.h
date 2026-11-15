@@ -1992,10 +1992,19 @@ static const struct
    char s_4b582a0b[29];
    char s_4b582a0c[29];
    char s_61213f1d[18];
+   char s_fa462638[10];
+   char s_29f97e35[7];
+   char s_569b0627[7];
+   char s_569b11b0[15];
+   char s_328ddae3[15];
    char s_60258de0[5];
    char s_caf61308[14];
+   char s_5410e874[5];
+   char s_9eb59c3e[15];
    char s_34b2592a[15];
    char s_c7a27b20[14];
+   char s_d65a7d95[9];
+   char s_d6611158[12];
    char s_317b17ed[8];
    char s_94c8d15f[8];
    char s_de16b5d2[9];
@@ -2032,6 +2041,7 @@ static const struct
    char s_4d7e9b13[23];
    char s_78585119[9];
    char s_69b801ef[9];
+   char s_3253994e[7];
    char s_a9c8430e[17];
    char s_f5911f43[32];
    char s_9017e0d3[17];
@@ -2072,6 +2082,7 @@ static const struct
    char s_8f379310[34];
    char s_6a9b757c[25];
    char s_6c52dfb1[35];
+   char s_334daaaa[14];
 #if defined (WIIU)
 #ifdef WIIU
    char s_afb881f7[60];
@@ -2195,7 +2206,6 @@ static const struct
 #ifdef HAVE_LAKKA
    char s_2bab34b2[29];
 #endif
-   char s_27aef25c[41];
 #ifdef _3DS
    char s_2873cef1[85];
    char s_b4816da6[51];
@@ -2819,7 +2829,6 @@ static const struct
    char s_a55bf936[27];
    char s_c519f84d[36];
    char s_48aefa30[28];
-   char s_5d383a58[35];
    char s_dcf8bd8b[34];
    char s_bce9b94f[36];
    char s_d32f5a63[31];
@@ -3359,6 +3368,7 @@ static const struct
    char s_8ab54d62[79];
    char s_aa554847[19];
    char s_ac2c797c[22];
+   char s_c52621db[8];
    char s_3fe94404[9];
    char s_80528b14[44];
    char s_eae21890[43];
@@ -5542,10 +5552,19 @@ static const struct
    "Ilmoituksen sijainti (vaaka)",
    "Ilmoituksen sijainti (pysty)",
    "Monitorin indeksi",
+   "Keskeyt\303\244",
+   "Korkea",
+   "Matala",
+   "Ei k\303\244yt\303\266ss\303\244",
+   "Ei k\303\244yt\303\266ss\303\244",
    "Aina",
    "Automaattinen",
+   "Aina",
+   "Ei k\303\244yt\303\266ss\303\244",
    "Ei k\303\244yt\303\266ss\303\244",
    "Automaattinen",
+   "Molemmat",
+   "Ei mit\303\244\303\244n",
    "180 as.",
    "270 as.",
    "Normaali",
@@ -5582,6 +5601,7 @@ static const struct
    "Skaalaa kokonaisluvuin",
    "\303\204lyk\303\244s",
    "Skaalaus",
+   "Skaala",
    "Videovarjostimet",
    "Automaattisen varjostimen viive",
    "Videovarjostimet",
@@ -5622,6 +5642,7 @@ static const struct
    "Mukautettu kuvasuhde (Y-sijainti)",
    "Aseta Vi n\303\244yt\303\266n leveys",
    "Vertikaalinen synkronointi (VSync)",
+   "J\303\244rjestelm\303\244",
 #if defined (WIIU)
 #ifdef WIIU
    "Optimoi Wii U GamePad:ille (uudelleenk\303\244ynnistys vaaditaan)",
@@ -5775,7 +5796,6 @@ static const struct
 #ifdef HAVE_LAKKA
    "M\303\244\303\244rit\303\244 bluetoothin tila.",
 #endif
-   "Etsi bluetooth laitteita ja yhdist\303\244 ne.",
 #ifdef _3DS
    "Alemman n\303\244yt\303\266n resurssien kansio. Kansioon on sis\303\244llytett\303\244v\303\244 "
    "\"bottom_menu.png\".",
@@ -6741,7 +6761,6 @@ static const struct
    "N\303\244yt\303\244 \"Viive\"-asetukset.",
    "N\303\244yt\303\244 \"Lokiin kirjaus\"-asetukset.",
    "N\303\244yt\303\244 \"Verkko\"-asetukset.",
-   "N\303\244yt\303\244 \"N\303\244ytt\303\266ruutu\"-asetukset.",
    "N\303\244yt\303\244 \"Soittolistat\"-asetukset.",
    "N\303\244yt\303\244 \"Virranhallinta\"-asetukset.",
    "N\303\244yt\303\244 \"Nauhoitus\"-asetukset.",
@@ -7404,6 +7423,7 @@ static const struct
    "Kaikkia mahdollisia pienoiskuvalatauksia on jo kokeiltu t\303\244h\303\244n soittolistaan.",
    "Ytimi\303\244 ohitettu: ",
    "Ytimi\303\244 p\303\244ivitetty: ",
+   "Valikko",
    "Tasainen",
    "N\303\244pp\303\244imist\303\266p\303\244\303\244llyst\303\244 ei ole asetettu.",
    "Ei tallenneta. Ohitukset ovat k\303\244yt\303\266ss\303\244.",
@@ -7558,7 +7578,7 @@ static const struct
  * compiler that pads this struct fails here instead of
  * misindexing at runtime. */
 typedef char msg_hash_fi_blob_check[
-      (sizeof(msg_hash_fi_blob) == (123381u
+      (sizeof(msg_hash_fi_blob) == (123429u
 #ifdef HAVE_LAKKA
        + 257u
 #endif
@@ -9875,10 +9895,19 @@ static const msg_hash_id_t msg_hash_fi_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_MESSAGE_POS_X,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_MESSAGE_POS_Y,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_MONITOR_INDEX,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_PAUSE_ON,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_HIGH,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_LOW,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SMOOTHING_OFF,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_EDIT_SNAP_ANGLES_OFF,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_ALWAYS,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_AUTO,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_BEAM_ALWAYS,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_BEAM_OFF,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_LASER_OFF,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_REFRESH_AUTO,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_TOUCH_HANDS_BOTH,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_OPENXR_TOUCH_HANDS_NONE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_ORIENTATION_FLIPPED,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_ORIENTATION_FLIPPED_ROTATED,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_ORIENTATION_NORMAL,
@@ -9915,6 +9944,7 @@ static const msg_hash_id_t msg_hash_fi_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCALE_INTEGER,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCALE_INTEGER_SCALING_SMART,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCALING_SETTINGS,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SCREEN_XR_SCALE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SHADERS_ENABLE,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SHADER_DELAY,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_SHADER_DIR,
@@ -9955,6 +9985,7 @@ static const msg_hash_id_t msg_hash_fi_ids[] =
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VIEWPORT_CUSTOM_Y,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VI_WIDTH,
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VSYNC,
+   (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_VULKAN_DRIVER_PATH_SYSTEM,
 #if defined (WIIU)
 #ifdef WIIU
    (msg_hash_id_t)MENU_ENUM_LABEL_VALUE_VIDEO_WIIU_PREFER_DRC,
@@ -10078,7 +10109,6 @@ static const msg_hash_id_t msg_hash_fi_ids[] =
 #ifdef HAVE_LAKKA
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_BLUETOOTH_ENABLE,
 #endif
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_BLUETOOTH_SETTINGS,
 #ifdef _3DS
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_BOTTOM_ASSETS_DIRECTORY,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_BOTTOM_FONT_COLOR_BLUE,
@@ -10702,7 +10732,6 @@ static const msg_hash_id_t msg_hash_fi_ids[] =
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_LATENCY,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_LOGGING,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_NETWORK,
-   (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_ONSCREEN_DISPLAY,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_PLAYLISTS,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_POWER_MANAGEMENT,
    (msg_hash_id_t)MENU_ENUM_SUBLABEL_SETTINGS_SHOW_RECORDING,
@@ -11242,6 +11271,7 @@ static const msg_hash_id_t msg_hash_fi_ids[] =
    (msg_hash_id_t)MSG_NO_THUMBNAIL_DOWNLOAD_POSSIBLE,
    (msg_hash_id_t)MSG_NUM_CORES_LOCKED,
    (msg_hash_id_t)MSG_NUM_CORES_UPDATED,
+   (msg_hash_id_t)MSG_OPENXR_EDIT_TAG_MENU,
    (msg_hash_id_t)MSG_OPENXR_HEADSET_VIEW_FLAT,
    (msg_hash_id_t)MSG_OSK_OVERLAY_NOT_SET,
    (msg_hash_id_t)MSG_OVERRIDES_ACTIVE_NOT_SAVING,

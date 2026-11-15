@@ -172,8 +172,14 @@ typedef struct core_updater_download_handle
    /* One reference for the task, one each for the HTTP and
     * decompress callbacks while those tasks are pushed: a download
     * cancelled mid-transfer retires first, and the callbacks still
-    * write here.  The last reference frees the handle. */
+    * write here.  The last reference tears the download down: its
+    * staging files, CRC stream and backup record. */
    retro_atomic_int_t refs;
+   /* The struct itself, with the remote_filename the duplicate finder
+    * reads: one hold for the references above, dropped after the
+    * teardown, and one for the task, dropped by its cleanup once
+    * nothing can find it. */
+   retro_atomic_int_t holds;
    /* Set by the HTTP and decompress callbacks on the main thread,
     * polled by the worker: release stores, acquire loads. */
    retro_atomic_int_t http_task_complete;
@@ -1112,6 +1118,16 @@ finish:
    }
 }
 
+static void core_updater_download_handle_drop(
+      core_updater_download_handle_t *download_handle)
+{
+   if (retro_atomic_fetch_sub_int(&download_handle->holds, 1) == 1)
+   {
+      free(download_handle->remote_filename);
+      free(download_handle);
+   }
+}
+
 static void free_core_updater_download_handle(core_updater_download_handle_t *download_handle)
 {
    /* The staging directory is this download's alone (concurrent
@@ -1145,9 +1161,6 @@ static void free_core_updater_download_handle(core_updater_download_handle_t *do
    if (download_handle->path_dir_core_assets)
       free(download_handle->path_dir_core_assets);
 
-   if (download_handle->remote_filename)
-      free(download_handle->remote_filename);
-
    if (download_handle->remote_core_path)
       free(download_handle->remote_core_path);
 
@@ -1164,8 +1177,7 @@ static void free_core_updater_download_handle(core_updater_download_handle_t *do
    if (download_handle->display_name)
       free(download_handle->display_name);
 
-   free(download_handle);
-   download_handle = NULL;
+   core_updater_download_handle_drop(download_handle);
 }
 
 static void core_updater_download_handle_release(
@@ -1745,28 +1757,31 @@ static void task_core_updater_download_handler(retro_task_t *task)
 
 task_finished:
    if (task)
-   {
-      /* Clear the state pointer before the handle is freed.  The
-       * worker runs handlers with running_lock released and the task
-       * still linked into tasks_running, so a task that has finished
-       * here stays visible to retro_task_threaded_find() until the
-       * worker retires it.  The finders in this file dereference
-       * task->state, so leaving it pointing at freed memory is a
-       * use-after-free - task_core_updater_download_finder() strcmps
-       * through it, which is a hard crash the moment
-       * task_update_installed_cores_handler() pushes the next core. */
-      task->state = NULL;
       task_set_flags(task, RETRO_TASK_FLG_FINISHED, true);
-   }
 
    /* Cancelled mid-transfer: the HTTP or decompress callback still
-    * holds a reference and frees the handle when it runs */
+    * holds a reference and tears the download down when it runs. The
+    * struct stays for the finder until the task's cleanup. */
    core_updater_download_handle_release(download_handle);
 }
 
+/* The task is findable until it retires, from other threads than the
+ * worker, so task->state stays set and the struct alive until then;
+ * the cleanup drops the task's hold. */
+static void task_core_updater_download_cleanup(retro_task_t *task)
+{
+   if (task->state)
+      core_updater_download_handle_drop(
+            (core_updater_download_handle_t*)task->state);
+}
+
+/* A download that has finished no longer counts, even while it waits
+ * to be retired. */
 static bool task_core_updater_download_finder(retro_task_t *task, void *user_data)
 {
-   if (task && user_data && task->handler == task_core_updater_download_handler)
+   if (     task && user_data
+         && task->handler == task_core_updater_download_handler
+         && !(task_get_flags(task) & RETRO_TASK_FLG_FINISHED))
    {
       core_updater_download_handle_t *download_handle = NULL;
       if ((download_handle = (core_updater_download_handle_t*)task->state))
@@ -1877,6 +1892,7 @@ static void *task_push_core_updater_download_internal(
    download_handle->backup_done              = NULL;
    download_handle->status                   = CORE_UPDATER_DOWNLOAD_BEGIN;
    retro_atomic_int_init(&download_handle->refs, 1);
+   retro_atomic_int_init(&download_handle->holds, 1);
 
    /* Concurrent downloads of the same file are not allowed */
    find_data.func     = task_core_updater_download_finder;
@@ -1898,6 +1914,8 @@ static void *task_push_core_updater_download_internal(
 
    task->handler          = task_core_updater_download_handler;
    task->state            = download_handle;
+   task->cleanup          = task_core_updater_download_cleanup;
+   retro_atomic_int_init(&download_handle->holds, 2);
    download_handle->ident = task->ident;
    task->title            = strdup(task_title);
    task->progress         = 0;
@@ -3003,12 +3021,58 @@ static bool task_play_feature_delivery_core_install_finder(
            && !(task_get_flags(task) & RETRO_TASK_FLG_FINISHED));
 }
 
+/* Cores picked from the Core Downloader while another installs: Play
+ * Feature Delivery takes one at a time, and the pick was turned away
+ * without a word - choosing a second core did nothing. Held now, in
+ * order, and started as the install ahead of them finishes. Only the
+ * menu's picks are held; the core switch pushes its own one at a time
+ * and moves on when one is refused. Frame thread only: the menu pushes
+ * these and the install's callback runs there. */
+#define PFD_INSTALLS_HELD_MAX 4
+static retro_task_t *pfd_installs_held[PFD_INSTALLS_HELD_MAX];
+static unsigned      pfd_installs_held_count = 0;
+
+/* Starts @task: the core it replaces is unloaded first, as the install
+ * may delete its file. */
+static void pfd_install_start(retro_task_t *task)
+{
+   play_feature_delivery_install_handle_t *h =
+      (play_feature_delivery_install_handle_t*)task->state;
+   if (retroarch_ctl(RARCH_CTL_IS_CORE_LOADED, (void*)h->local_core_path))
+      command_event(CMD_EVENT_UNLOAD_CORE, NULL);
+   task_queue_push(task);
+}
+
+static void cb_task_pfd_core_install(retro_task_t *task,
+      void *task_data, void *user_data, const char *err)
+{
+   task_finder_data_t find_data;
+   unsigned i;
+   retro_task_t *next;
+
+   cb_task_core_updater_download(task, task_data, user_data, err);
+
+   if (!pfd_installs_held_count)
+      return;
+   find_data.func     = task_play_feature_delivery_core_install_finder;
+   find_data.userdata = NULL;
+   /* the core switch may have pushed one meanwhile */
+   if (task_queue_find(&find_data))
+      return;
+   next = pfd_installs_held[0];
+   for (i = 1; i < pfd_installs_held_count; i++)
+      pfd_installs_held[i - 1] = pfd_installs_held[i];
+   pfd_installs_held[--pfd_installs_held_count] = NULL;
+   pfd_install_start(next);
+}
+
 static void *task_push_play_feature_delivery_core_install_internal(
       core_updater_list_t* core_list,
       const char *filename,
       bool mute,
       core_updater_sub_task_done_t *install_done)
 {
+   bool hold = false;
    size_t _len;
    task_finder_data_t find_data;
    char task_title[128];
@@ -3033,12 +3097,26 @@ static void *task_push_play_feature_delivery_core_install_internal(
        || (!list_entry->display_name || !*list_entry->display_name))
       goto error;
 
-   /* Only one core may be downloaded at a time */
+   /* Only one core may be downloaded at a time: a pick from the menu
+    * waits behind it, once, and anything else is refused */
    find_data.func     = task_play_feature_delivery_core_install_finder;
    find_data.userdata = NULL;
 
-   if (task_queue_find(&find_data))
-      goto error;
+   if (pfd_installs_held_count || task_queue_find(&find_data))
+   {
+      unsigned i;
+      if (install_done || pfd_installs_held_count >= PFD_INSTALLS_HELD_MAX)
+         goto error;
+      for (i = 0; i < pfd_installs_held_count; i++)
+      {
+         play_feature_delivery_install_handle_t *h =
+            (play_feature_delivery_install_handle_t*)
+            pfd_installs_held[i]->state;
+         if (string_is_equal(h->core_filename, list_entry->remote_filename))
+            goto error;
+      }
+      hold = true;
+   }
 
    /* Configure handle */
    pfd_install_handle->core_filename          = strdup(list_entry->remote_filename);
@@ -3065,7 +3143,7 @@ static void *task_push_play_feature_delivery_core_install_internal(
    task->title            = strdup(task_title);
    task->progress         = 0;
    task->progress_cb      = task_window_progress_cb;
-   task->callback         = cb_task_core_updater_download;
+   task->callback         = cb_task_pfd_core_install;
    task->user_data        = (void*)install_done;
    task->flags           |=  RETRO_TASK_FLG_ALTERNATIVE_LOOK;
    if (mute)
@@ -3073,15 +3151,14 @@ static void *task_push_play_feature_delivery_core_install_internal(
    else
       task->flags        &= ~RETRO_TASK_FLG_MUTE;
 
-   /* Install process may involve the *deletion*
-    * of an existing core file. If core is
-    * already running, must therefore unload it
-    * to prevent undefined behaviour */
-   if (retroarch_ctl(RARCH_CTL_IS_CORE_LOADED, (void*)list_entry->local_core_path))
-      command_event(CMD_EVENT_UNLOAD_CORE, NULL);
-
-   /* Push task */
-   task_queue_push(task);
+   if (hold)
+      pfd_installs_held[pfd_installs_held_count++] = task;
+   else
+      /* Install process may involve the *deletion*
+       * of an existing core file. If core is
+       * already running, must therefore unload it
+       * to prevent undefined behaviour */
+      pfd_install_start(task);
 
    return task;
 

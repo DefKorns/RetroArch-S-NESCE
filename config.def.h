@@ -418,7 +418,12 @@
 #define MAXIMUM_SCANLINE_SYNC_OFFSET 3000
 
 /* Vulkan specific */
+#if defined(__PSL1GHT__) || defined(__PS3__)
+/* RSX keeps the core behind each flip with two: lowest input latency */
+#define DEFAULT_MAX_SWAPCHAIN_IMAGES 2
+#else
 #define DEFAULT_MAX_SWAPCHAIN_IMAGES 3
+#endif
 #define MINIMUM_MAX_SWAPCHAIN_IMAGES 2
 #define MAXIMUM_MAX_SWAPCHAIN_IMAGES 4
 
@@ -565,6 +570,10 @@
  * as late as the next refresh allows given measured core and render
  * times. Off: the fixed-timer pacing threaded video always had. */
 #define DEFAULT_VIDEO_THREADED_DISPLAY_PACING false
+
+/* Leave a frame the core marks as a repeat unpresented, so the display
+ * sees the content's own frame rate. Off: every repeat is presented. */
+#define DEFAULT_VIDEO_SKIP_DUPE_FRAMES false
 
 /* The Direct3D 9 drivers on a Direct3D9Ex device: a window presented
  * through the flip model, and the frame latency settings honoured.
@@ -889,6 +898,7 @@
 #define DEFAULT_SETTINGS_SHOW_ACCESSIBILITY true
 #define DEFAULT_SETTINGS_SHOW_POWER_MANAGEMENT true
 #define DEFAULT_SETTINGS_SHOW_ACHIEVEMENTS true
+#define DEFAULT_SETTINGS_SHOW_BLUETOOTH true
 #define DEFAULT_SETTINGS_SHOW_NETWORK true
 #define DEFAULT_SETTINGS_SHOW_PLAYLISTS true
 #define DEFAULT_SETTINGS_SHOW_USER true
@@ -965,6 +975,8 @@
 #define DEFAULT_MENU_SHOW_SUBLABELS_CURRENT_SELECTION_ONLY false
 #define DEFAULT_MENU_SHOW_CONFIRM true
 #define DEFAULT_MENU_DYNAMIC_WALLPAPER_ENABLE true
+
+#define DEFAULT_MENU_SCROLL_QUICK true
 #define DEFAULT_MENU_SCROLL_FAST false
 #define DEFAULT_MENU_SCROLL_DELAY 256
 

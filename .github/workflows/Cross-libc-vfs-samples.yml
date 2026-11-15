@@ -101,6 +101,8 @@ jobs:
             ./vfs_mapped_ptr_test
             ./vfs_v5_metadata_test
             ./vfs_readahead_test
+            ./vfs_close_result_test
+            ./vfs_descriptor_rw_test
           }
           # Mapping on (what the platform actually ships), mapping off
           # with the descriptor path forced (what the consoles have),
@@ -145,7 +147,26 @@ jobs:
       # The system upgrade runs in the action: an msys2-runtime update
       # kills every MSYS2 process, which a run step's own shell would
       # not survive.
-      - uses: msys2/setup-msys2@v2
+      - name: Set up MSYS2
+        id: msys2
+        continue-on-error: true
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: ${{ matrix.sys }}
+          update: true
+
+      # setup-msys2 has no retry of its own, and its system upgrade fails
+      # the job when mirror.msys2.org stalls ("Operation too slow") on the
+      # package databases. A failed attempt is run once more after a
+      # minute; the second reinstalls over the first.
+      - name: Wait before retrying MSYS2
+        if: steps.msys2.outcome == 'failure'
+        shell: bash
+        run: sleep 60
+
+      - name: Set up MSYS2 (retry)
+        if: steps.msys2.outcome == 'failure'
+        uses: msys2/setup-msys2@v2
         with:
           msystem: ${{ matrix.sys }}
           update: true
@@ -203,6 +224,38 @@ jobs:
           RETRO_VFS_PREFETCH=none ./vfs_readahead_test.exe
           # ... and never on, or stalling, the reader's thread.
           ./vfs_prefetch_offthread_test.exe
+          # The descriptor path's close() result, with PS2's semantics.
+          ./vfs_close_result_test.exe
+          # Read-write descriptor streams on the Windows C runtimes,
+          # and that a file they create is writable afterwards.
+          ./vfs_descriptor_rw_test.exe
+          # Reads and appends at offsets from several threads through
+          # the second handle: opened relative to the stream's, the same
+          # checked as before Vista, and by the path; a -1 fails each.
+          ./vfs_positional_nommap_test.exe
+          ./vfs_positional_ntverify_test.exe
+          ./vfs_positional_pathreopen_test.exe
+          # twelve threads: more than a stream keeps events for
+          ./vfs_positional_wide_test.exe
+          # seeks and reads of every size, every byte checked, through
+          # the stream's own buffer
+          ./vfs_seek_read_mix_test.exe
+          # writes, seeks, reads, truncates and holes in every write
+          # mode through the stream's own buffer, checked against a copy
+          ./vfs_write_mix_test.exe
+          # The same with streams on the C runtime (VFS_WIN32_NO_NATIVE):
+          # the stream contract, the path an open takes, large files,
+          # offsets from threads, writes.
+          make clean MMAP=0
+          make MMAP=0 VFS_NATIVE=0
+          ./vfs_bulk_read_test.exe
+          ./vfs_seek_contract_test.exe
+          ./vfs_large_file_test.exe
+          ./vfs_readahead_test.exe
+          ./vfs_descriptor_rw_test.exe
+          ./vfs_positional_test.exe
+          ./vfs_positional_nommap_test.exe
+          ./vfs_write_mix_test.exe
 
       # The Win64 fastjmp_set stores xmm6-xmm15 with movaps and faults
       # on a misaligned buffer. Linux has no such stores, so the Linux
