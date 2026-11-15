@@ -3,27 +3,45 @@
 uistop
 self="$(readlink -f "$0")"
 
+shQuote(){
+  # shellcheck disable=SC1003 # a literal backslash
+  local q="'" bs='\' esc
+  esc="s/$q/$q$bs$bs$q$q/g"
+  printf "'%s'" "$(printf '%s' "$1" | sed "$esc")"
+}
+
 if [ -f "/bin/remote-exec" ]; then
   if [ "$1" = "--rexec" ]; then
     shift
-	rexec_ok="1"
+    rexec_ok="1"
   else
-    echo "$self --rexec $*" > /var/exec.flag
+    cmd="$(shQuote "$self") --rexec"
+    for arg; do
+      cmd="$cmd $(shQuote "$arg")"
+    done
+    echo "$cmd" > /var/exec.flag
     exit 1
   fi
 fi
 
 HOME="/etc/libretro"
 rcache="/var/cache/retroarch"
+autosaves_orig="$HOME/autosaves.orig"
 mkdir -p "$rcache"
 
 [ -f "$HOME/retroarch.cfg" ] || cp "$HOME/config/retroarch_default.cfg" "$HOME/retroarch.cfg"
 
-autoSaves(){
-  sed -i "s|^savestate_auto_load .*|savestate_auto_load = \"$1\"|; s|^savestate_auto_save .*|savestate_auto_save = \"$1\"|" "$HOME/retroarch.cfg"
+restoreAutoSaves(){
+  [ -f "$autosaves_orig" ] || return 0
+  while read -r line; do
+    sed -i "s|^${line%% *} .*|$line|" "$HOME/retroarch.cfg"
+  done < "$autosaves_orig"
+  rm -f "$autosaves_orig"
 }
 
-autoSaves false
+restoreAutoSaves
+grep -E '^savestate_auto_(load|save) ' "$HOME/retroarch.cfg" > "$autosaves_orig"
+sed -i 's|^savestate_auto_load .*|savestate_auto_load = "false"|; s|^savestate_auto_save .*|savestate_auto_save = "false"|' "$HOME/retroarch.cfg"
 
 if [ "$1" = "null" ]; then
   retroarch -c "$HOME/retroarch.cfg" -vf &
@@ -42,8 +60,7 @@ if [ -n "$rexec_ok" ]; then
   done
 fi
 
-autoSaves true
-
 wait "$rpid"
+restoreAutoSaves
 rm -rf "$rcache"
 uistart

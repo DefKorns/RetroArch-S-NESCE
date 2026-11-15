@@ -9,7 +9,14 @@ corename="$1"
 noprefix="${corename#km_}"
 core="$HOME/core/${1}_libretro.so"
 tmppath="/tmp/rom"
+rcache="/var/cache/retroarch"
 rom="$2"
+
+abortLaunch(){
+  rm -rf "$tmppath" "$rcache"
+  uistart
+  exit 1
+}
 
 # A .sfrom container, alone or in a .7z: cut the ROM out where the launchers expect it
 sfrom=
@@ -17,11 +24,12 @@ case "$rom" in
   *.sfrom) sfrom="$rom" ;;
   *.sfrom.7z)
     mkdir -p "$tmppath/unpack"
-    (cd "$tmppath/unpack" && tiny7zx x "$rom" > /dev/null 2>&1)
+    (cd "$tmppath/unpack" && tiny7zx x "$rom" > /dev/null 2>&1) || abortLaunch
     sfrom="$tmppath/unpack/$(basename "$rom" .7z)"
     ;;
 esac
 if [ -n "$sfrom" ]; then
+  [ -f "$sfrom" ] || abortLaunch
   mkdir -p "$tmppath"
   sfrom_start="$(hexdump -e '1/4 "%u"' -s8 -n4 "$sfrom")"
   sfrom_footer="$(hexdump -e '1/4 "%u"' -s20 -n4 "$sfrom")"
@@ -35,10 +43,13 @@ game_path="$(dirname "$rom")"
 filename="$(basename "$rom")"
 id="${filename%.*}"
 extension="${filename##*.}"
-rcache="/var/cache/retroarch"
 if [ "$(head -c 6 "$core" 2> /dev/null | od -An -tx1 | tr -d ' \n')" = "fd377a585a00" ]; then
   mkdir -p "$rcache"
-  xz -dc "$core" > "$rcache/${1}_libretro.so"
+  xz -dc "$core" > "$rcache/${1}_libretro.so.tmp" || {
+    rm -f "$rcache/${1}_libretro.so.tmp"
+    abortLaunch
+  }
+  mv -f "$rcache/${1}_libretro.so.tmp" "$rcache/${1}_libretro.so"
   core="$rcache/${1}_libretro.so"
 fi
 autosave="$rcache/$id.state.auto"
@@ -48,6 +59,10 @@ t_suffix="_time.txt"
 shift 2
 
 while [ $# -gt 0 ]; do
+  step=1
+  case "$1" in
+    --load-state-file|--save-on-quit|--rollback-input-dir|--rollback-output-dir|--save-screenshot-on-quit|--save-data-backing-file|--shared-save|--graphic-filter|--video-mode|--title-code|--ra-extra|--load-time-path|--save-time-path|--decorative-frame-path) step=2 ;;
+  esac
   case "$1" in
     --load-state-file) load="$2" ;;
     --save-on-quit) save="$2" ;;
@@ -88,7 +103,8 @@ while [ $# -gt 0 ]; do
     --nand-states) force_nand="1" ;;
     --overclock) overclock="1" ;;
   esac
-  shift
+  [ "$step" -gt $# ] && step=$#
+  shift "$step"
 done
 
 # Restore default config file if "retroarch.cfg" is not found
@@ -133,14 +149,16 @@ if [ "$game_path" = "$tmppath" ]; then
 fi
 
 # Mount game folder with its save folder, useful for cores that save in content dir
-[ -n "$sram" ] && mount -t overlayfs overlay -o "rw,lowerdir=$game_path,upperdir=$sram_folder" "$game_path"
+if [ -n "$sram" ]; then
+  mkdir -p "$sram_folder"
+  mount -t overlayfs overlay -o "rw,lowerdir=$game_path,upperdir=$sram_folder" "$game_path"
+fi
 
 # Variables for time file and demo mode + creating folders
 [ -z "$timefile_save" ] && timefile_save="$save$t_suffix"
 [ -z "$timefile_load" ] && timefile_load="$load$t_suffix"
 [ -n "$demo" ] && load="$(dirname "$load")/savestate"
 [ -n "$save" ] && mkdir -p "$(dirname "$save")"
-[ -n "$sram" ] && mkdir -p "$sram_folder"
 [ -n "$screenshot" ] && mkdir -p "$(dirname "$screenshot")"
 [ "$cfg_ra_write_test" = "y" ] && mkdir -p "$usb_states"
 # States go to the SD card when it is writable, unless the game forces the NAND with "--nand-states"
@@ -261,8 +279,8 @@ racfg(){
 
 # Disable auto load/save state settings
 if [ -n "$nosaves" ]; then
-  racfg "savestate_auto_load = \"false\"" "$HOME/retroarch.cfg"
-  racfg "savestate_auto_save = \"false\"" "$HOME/retroarch.cfg"
+  racfg "savestate_auto_load = \"false\"" "$HOME/retroarch.cfg" "$rcache/current"
+  racfg "savestate_auto_save = \"false\"" "$HOME/retroarch.cfg" "$rcache/current"
 fi
 
 # Modifying overlays .cfg files to point to current border
@@ -312,9 +330,9 @@ tm="0"
 
 # Starting RetroArch
 if [ -z "$debug" ]; then
-  retroarch -c "$HOME/retroarch.cfg" -vfL "$core" "$rom" "$extra" &
+  retroarch -c "$HOME/retroarch.cfg" -vfL "$core" "$rom" ${extra:+"$extra"} &
 else
-  retroarch -c "$HOME/retroarch.cfg" -vfL "$core" "$rom" "$extra" > "$debug/$id.log" 2>&1 &
+  retroarch -c "$HOME/retroarch.cfg" -vfL "$core" "$rom" ${extra:+"$extra"} > "$debug/$id.log" 2>&1 &
 fi
 rpid="$!"
 
@@ -378,17 +396,11 @@ if [ -n "$sram" ]; then
   fi
 fi
 
-# Restore modified retroarch.cfg lines if bezel-mode was enabled
+# Restore the retroarch.cfg lines that were modified for this launch
 if [ -f "$rcache/current" ]; then
   while read -r line; do
     racfg "$line" "$HOME/retroarch.cfg"
   done < "$rcache/current"
-fi
-
-# Restore auto load/save state settings
-if [ -n "$nosaves" ]; then
-  racfg "savestate_auto_load = \"true\"" "$HOME/retroarch.cfg"
-  racfg "savestate_auto_save = \"true\"" "$HOME/retroarch.cfg"
 fi
 
 # Cleanup

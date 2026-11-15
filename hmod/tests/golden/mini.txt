@@ -1,0 +1,30 @@
+## mini
+exit 1
+'/wrap/retroarch-mini' --rexec 'snes9x2005' '/games/a b/it'\''s.sfc'
+## run
+exit 0
+## retroarch
+retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/snes9x2005_libretro.so /games/a b/it's.sfc
+core-content: FAKE-CORE-snes9x2005
+/stubs/retroarch: line 28: can't open /games/a b/it's.sfc: no such file
+rom-size: 
+cfg-diff:
+--- /tmp/cfg_orig
++++ /etc/libretro/retroarch.cfg
+@@ -225,7 +225,7 @@
+ stdin_cmd_enable = "false"
+ block_sram_overwrite = "false"
+ savestate_auto_index = "false"
+-savestate_auto_save = "true"
++savestate_auto_save = "false"
+ savestate_auto_load = "false"
+ savestate_thumbnail_enable = "false"
+ history_list_enable = "true"
+overlay-diff:
+files:
+## after
+cfg restored
+ls: /etc/libretro/autosaves.orig: No such file or directory
+uistop 
+uistop 
+uistart 

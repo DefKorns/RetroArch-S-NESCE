@@ -2,9 +2,10 @@
 core=fceumm
 filename="$1"
 extension="${filename##*.}"
+shift
 
 if [ "$extension" = "fds" ] || [ "$extension" = "qd" ]; then
   [ -f /etc/libretro/core/nestopia_libretro.so ] && core=nestopia
 fi
 
-exec retroarch-clover "$core" "$filename" "$@"
+exec retroarch-clover "$core" "$filename" ${1+"$@"}

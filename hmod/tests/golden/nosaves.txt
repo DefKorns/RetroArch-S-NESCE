@@ -4,7 +4,7 @@
 retroarch-shortcuts 
 uistart 
 ## retroarch
-retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/snes9x2005_libretro.so /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc 
+retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/snes9x2005_libretro.so /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc
 core-content: FAKE-CORE-snes9x2005
 rom-size: 3
 cfg-diff:
@@ -23,6 +23,7 @@ cfg-diff:
  playlist_entry_remove = "true"
 overlay-diff:
 files:
+  F /var/cache/retroarch/current
 ## watchdog
 watchdog --pid PID
 ## fbgrab

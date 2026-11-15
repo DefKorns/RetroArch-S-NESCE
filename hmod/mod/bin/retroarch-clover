@@ -3,12 +3,23 @@
 # Kill it! Kill it with fire!
 uistop
 
+shQuote(){
+  # shellcheck disable=SC1003 # a literal backslash
+  local q="'" bs='\' esc
+  esc="s/$q/$q$bs$bs$q$q/g"
+  printf "'%s'" "$(printf '%s' "$1" | sed "$esc")"
+}
+
 core="$1"
 rom="$2"
 shift 2
 
 if [ -f "/bin/remote-exec" ]; then
-  echo retroarch-clover-child "$core" "\"$rom\"" ${1+"$@"} > /var/exec.flag
+  cmd="retroarch-clover-child $(shQuote "$core") $(shQuote "$rom")"
+  for arg; do
+    cmd="$cmd $(shQuote "$arg")"
+  done
+  echo "$cmd" > /var/exec.flag
 else
-  exec retroarch-clover-child "$core" "\"$rom\"" ${1+"$@"}
+  exec retroarch-clover-child "$core" "$rom" ${1+"$@"}
 fi

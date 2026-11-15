@@ -8,7 +8,7 @@ umount /games/CLV-Z-MAME
 retroarch-shortcuts 
 uistart 
 ## retroarch
-retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/mame2003_libretro.so /games/CLV-Z-MAME/game.zip 
+retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/mame2003_libretro.so /games/CLV-Z-MAME/game.zip
 core-content: FAKE-CORE-mame2003
 rom-size: 3
 cfg-diff:

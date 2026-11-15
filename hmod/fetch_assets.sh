@@ -23,12 +23,16 @@ dest="$1"
 assets_url="${ASSETS_URL:-https://defkorns.github.io/retroarch-snesce-cores/frontend/assets.tar.gz}"
 autoconfig_ref=2f73cbf1f74904233f1c91a5c8e220565a880375
 
-mkdir -p "$dest/assets" "$dest/joypad_autoconf"
+mkdir -p "$dest/joypad_autoconf"
 curl -fsSL -o "$dest/assets.tar.gz" "$assets_url"
 curl -fsSL -o "$dest/assets.tar.sha256" "${assets_url%.gz}.sha256"
 gzip -dc "$dest/assets.tar.gz" > "$dest/assets.tar"
 echo "$(cat "$dest/assets.tar.sha256")  $dest/assets.tar" | sha256sum -c -
-tar -xf "$dest/assets.tar" -C "$dest/assets"
+rm -rf "$dest/assets.new"
+mkdir -p "$dest/assets.new"
+tar -xf "$dest/assets.tar" -C "$dest/assets.new"
+rm -rf "$dest/assets"
+mv "$dest/assets.new" "$dest/assets"
 rm -f "$dest/assets.tar.gz" "$dest/assets.tar" "$dest/assets.tar.sha256"
 # the legacy /bin names of the cores, read by retroarch-shortcuts; without it only the core names get a shortcut
 curl -fsSL -o "$dest/shortcuts.list" "${assets_url%/*}/shortcuts.list" || echo "no shortcuts.list at ${assets_url%/*}" >&2

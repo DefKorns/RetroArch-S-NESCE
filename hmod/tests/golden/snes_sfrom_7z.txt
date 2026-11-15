@@ -8,7 +8,7 @@ umount /tmp/rom
 retroarch-shortcuts 
 uistart 
 ## retroarch
-retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/snes9x2010_libretro.so /tmp/rom/ActRaiser_2.sfrom.sfc 
+retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/snes9x2010_libretro.so /tmp/rom/ActRaiser_2.sfrom.sfc
 core-content: FAKE-CORE-snes9x2010
 rom-size: 64
 cfg-diff:

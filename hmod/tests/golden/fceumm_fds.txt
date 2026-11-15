@@ -6,7 +6,7 @@ umount /games/CLV-P-HAAAJ
 retroarch-shortcuts 
 uistart 
 ## retroarch
-retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/fceumm_libretro.so /games/CLV-P-HAAAJ/game.fds 
+retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/fceumm_libretro.so /games/CLV-P-HAAAJ/game.fds
 core-content: FAKE-CORE-fceumm
 rom-size: 3
 cfg-diff:

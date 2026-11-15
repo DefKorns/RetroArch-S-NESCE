@@ -1,0 +1,9 @@
+## nes
+retroarch-clover-child 'nestopia' '/games/a b/it'\''s $HOME "x".fds' '--ra-extra' '--ips=/x y.ips' '--title-code' 'T'
+## run
+[nestopia]
+[/games/a b/it's $HOME "x".fds]
+[--ra-extra]
+[--ips=/x y.ips]
+[--title-code]
+[T]

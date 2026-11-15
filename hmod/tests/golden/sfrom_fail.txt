@@ -1,0 +1,14 @@
+## child snes9x2010 /games/CLV-U-UCWJY/missing.sfrom.7z --title-code CLV-U-UCWJY --save-data-backing-file /saves/CLV-U-UCWJY/data.sram
+## exit 1
+## log
+tiny7zx x /games/CLV-U-UCWJY/missing.sfrom.7z
+uistart 
+## retroarch
+## watchdog
+## fbgrab
+## after
+cfg-diff:
+overlay-diff:
+files:
+  D /games/CLV-U-UCWJY
+  D /saves/CLV-U-UCWJY

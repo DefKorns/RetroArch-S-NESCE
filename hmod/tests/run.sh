@@ -278,9 +278,79 @@ scnShortcuts() {
   } > "$out/shortcuts.txt"
 }
 
+scnSfromFail() {
+  mkdir -p /games/CLV-U-UCWJY /saves/CLV-U-UCWJY
+  runChild sfrom_fail snes9x2010 /games/CLV-U-UCWJY/missing.sfrom.7z --title-code CLV-U-UCWJY     --save-data-backing-file /saves/CLV-U-UCWJY/data.sram
+}
+
+scnXzFail() {
+  {
+    byte 253
+    printf '7zXZ'
+    byte 0
+    printf 'broken'
+  } > /etc/libretro/core/km_bad_libretro.so
+  mkdir -p /games/CLV-P-VAAAJ
+  printf 'ROM' > /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc
+  runChild xz_fail km_bad /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc
+}
+
+scnOptionValues() {
+  mkdir -p /games/CLV-P-VAAAJ
+  printf 'ROM' > /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc
+  runChild option_values snes9x2005 /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc --title-code --ra-nosaves --video-mode
+}
+
+# the launchers write /var/exec.flag when /bin/remote-exec exists; run it with a child that prints its arguments
+scnWrappers() {
+  mkdir -p /wrap
+  cp "$mod/bin/retroarch-clover" "$mod/bin/nes" /wrap/
+  # shellcheck disable=SC2016 # the stub expands its own $a
+  printf '#!/bin/sh
+for a; do echo "[$a]"; done
+' > /wrap/retroarch-clover-child
+  chmod +x /wrap/*
+  touch /bin/remote-exec
+  rom="/games/a b/it's \$HOME \"x\".fds"
+  {
+    echo "## nes"
+    PATH="/wrap:/stubs:$PATH" sh /wrap/nes "$rom" --ra-extra '--ips=/x y.ips' --title-code T
+    cat /var/exec.flag
+    echo "## run"
+    PATH="/wrap:/stubs:$PATH" sh /var/exec.flag
+  } > "$out/wrappers.txt" 2>&1
+  rm -f /bin/remote-exec /var/exec.flag
+}
+
+scnMini() {
+  mkdir -p /etc/libretro/core
+  sed -i 's/^savestate_auto_load .*/savestate_auto_load = "false"/' /etc/libretro/retroarch.cfg
+  cp /etc/libretro/retroarch.cfg /tmp/cfg_orig
+  touch /bin/remote-exec
+  mkdir -p /wrap
+  cp "$mod/bin/retroarch-mini" /wrap/
+  rom="/games/a b/it's.sfc"
+  {
+    echo "## mini"
+    PATH="/wrap:/stubs:$PATH" sh /wrap/retroarch-mini snes9x2005 "$rom"
+    echo "exit $?"
+    cat /var/exec.flag
+    echo "## run"
+    PATH="/wrap:/stubs:$PATH" sh /var/exec.flag
+    echo "exit $?"
+    echo "## retroarch"
+    cat /tmp/log.retroarch
+    echo "## after"
+    diff /tmp/cfg_orig /etc/libretro/retroarch.cfg && echo "cfg restored"
+    ls /etc/libretro/autosaves.orig 2>&1
+    cat /tmp/log
+  } > "$out/mini.txt" 2>&1
+  rm -f /bin/remote-exec /var/exec.flag
+}
+
 rm -rf "$out"
 mkdir -p "$out"
-scenarios="Shortcuts SnesBasic SnesSfrom SnesSfrom7z NesFds FceummFds Nosaves Bezel Crt Filters Extra Xz Ips Watchdog Mame Screenshot StatesSd StatesNand StatesForceNand"
+scenarios="Shortcuts SnesBasic SnesSfrom SnesSfrom7z SfromFail XzFail OptionValues Wrappers Mini NesFds FceummFds Nosaves Bezel Crt Filters Extra Xz Ips Watchdog Mame Screenshot StatesSd StatesNand StatesForceNand"
 for s in $scenarios; do
   (
     resetFs
