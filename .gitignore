@@ -399,4 +399,5 @@ samples/input/sensor_subdevice/core_sensor_fragment.c
 /classicmini/mod/bin/fbgrab
 /classicmini/mod/etc/libretro/assets/
 /classicmini/mod/etc/libretro/joypad_autoconf/
+/classicmini/mod/etc/libretro/shortcuts.list
 /classicmini/mod/bin/retroarch_watchdog
