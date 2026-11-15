@@ -18,4 +18,4 @@
 set -eu
 export MSYS_NO_PATHCONV=1
 repo=$(cd "$(dirname "$0")/../.." && { pwd -W 2> /dev/null || pwd; })
-docker run --rm -v "$repo:/repo" busybox:1.36-glibc sh /repo/hmod/tests/run.sh "$@"
+docker run --rm -v "$repo:/repo" busybox:1.36-glibc sh /repo/classicmini/tests/run.sh "$@"

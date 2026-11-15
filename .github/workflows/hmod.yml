@@ -6,7 +6,7 @@ on:
   pull_request:
     paths:
       - Makefile.hmod
-      - hmod/**
+      - classicmini/**
       - .github/workflows/hmod.yml
   workflow_dispatch:
 

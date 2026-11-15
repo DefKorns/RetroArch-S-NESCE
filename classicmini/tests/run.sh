@@ -15,8 +15,8 @@
 #  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 # Runs retroarch-clover-child in a BusyBox container with stand-ins for retroarch,
-# mount and the rest, and compares what it does with hmod/tests/golden.
-# Usage: sh hmod/tests/run.sh [--update]   (docker-run.sh starts it in the container)
+# mount and the rest, and compares what it does with classicmini/tests/golden.
+# Usage: sh classicmini/tests/run.sh [--update]   (docker-run.sh starts it in the container)
 # shellcheck disable=SC2329,SC2317 # the scn* functions are called as "scn$s"
 set -u
 
@@ -27,8 +27,8 @@ set -u
 }
 
 repo="${REPO:-/repo}"
-mod="$repo/hmod/mod"
-tests="$repo/hmod/tests"
+mod="$repo/classicmini/mod"
+tests="$repo/classicmini/tests"
 child="$mod/bin/retroarch-clover-child"
 out=/tmp/out
 mode=compare
