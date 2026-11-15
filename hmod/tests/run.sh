@@ -295,10 +295,17 @@ scnXzFail() {
   runChild xz_fail km_bad /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc
 }
 
-scnOptionValues() {
+scnOptionValue() {
   mkdir -p /games/CLV-P-VAAAJ
   printf 'ROM' > /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc
-  runChild option_values snes9x2005 /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc --title-code --ra-nosaves --video-mode
+  runChild option_value snes9x2005 /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc --video-mode keep-aspect-ratio     --ra-extra --bezel-mode --title-code
+}
+
+scnNosavesKeepsUserCfg() {
+  mkdir -p /games/CLV-P-VAAAJ
+  printf 'ROM' > /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc
+  sed -i 's/^savestate_auto_load .*/savestate_auto_load = "false"/' /etc/libretro/retroarch.cfg /tmp/cfg_orig
+  runChild nosaves_keeps_user_cfg snes9x2005 /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc --ra-nosaves
 }
 
 # the launchers write /var/exec.flag when /bin/remote-exec exists; run it with a child that prints its arguments
@@ -350,7 +357,7 @@ scnMini() {
 
 rm -rf "$out"
 mkdir -p "$out"
-scenarios="Shortcuts SnesBasic SnesSfrom SnesSfrom7z SfromFail XzFail OptionValues Wrappers Mini NesFds FceummFds Nosaves Bezel Crt Filters Extra Xz Ips Watchdog Mame Screenshot StatesSd StatesNand StatesForceNand"
+scenarios="Shortcuts SnesBasic SnesSfrom SnesSfrom7z SfromFail XzFail OptionValue NosavesKeepsUserCfg Wrappers Mini NesFds FceummFds Nosaves Bezel Crt Filters Extra Xz Ips Watchdog Mame Screenshot StatesSd StatesNand StatesForceNand"
 for s in $scenarios; do
   (
     resetFs
