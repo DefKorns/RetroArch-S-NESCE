@@ -42,6 +42,8 @@ curl -fsSL "https://codeload.github.com/libretro/retroarch-joypad-autoconfig/tar
 find "$dest/joypad_autoconf" -name '*.cfg' -exec sed -i 's/\r$//' {} +
 # upstream maps no stick axes for the Clovercon, so the Wii Classic Controller sticks never reach RetroArch
 for pad in Nintendo_Clovercon_-_controller1 Nintendo_Clovercon_-_controller2; do
+  # Home quits through retroarch_watchdog, and RetroArch ignores SIGTERM while its menu is open
+  sed -i '/^input_menu_toggle_btn/d' "$dest/joypad_autoconf/udev/$pad.cfg"
   cat >> "$dest/joypad_autoconf/udev/$pad.cfg" <<'EOF'
 
 input_l_x_plus_axis = "+0"

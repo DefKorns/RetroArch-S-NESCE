@@ -36,6 +36,9 @@ struct device {
    enum device_kind kind;
    long pressed_at;
    int held[2];
+   int select_down;
+   int dpad_down;
+   int combo_on;
    unsigned char down[KEY_CNT];
 };
 
@@ -94,6 +97,22 @@ static void report(struct device *dev, int group, unsigned code,
    fflush(stdout);
 }
 
+static void home_combo(struct device *dev, unsigned code, int value)
+{
+   int on;
+
+   if (code == BTN_SELECT)
+      dev->select_down = value;
+   else
+      dev->dpad_down = value;
+   on = dev->select_down && dev->dpad_down;
+   if (on != dev->combo_on)
+   {
+      dev->combo_on = on;
+      report(dev, 1, KEY_MAX, "joy", "home", on);
+   }
+}
+
 static void handle(struct device *dev, const struct input_event *ev, int any)
 {
    if (ev->type != EV_KEY || ev->value > 1 || ev->code >= KEY_CNT)
@@ -109,6 +128,8 @@ static void handle(struct device *dev, const struct input_event *ev, int any)
             report(dev, 0, ev->code, "key", "power", ev->value);
          break;
       case KIND_PAD:
+         if (ev->code == BTN_SELECT || ev->code == BTN_TRIGGER_HAPPY4)
+            home_combo(dev, ev->code, ev->value);
          if (ev->code == BTN_MODE)
             report(dev, 1, ev->code, "joy", "home", ev->value);
          else if (any)
