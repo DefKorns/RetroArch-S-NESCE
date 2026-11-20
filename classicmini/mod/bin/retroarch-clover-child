@@ -283,6 +283,16 @@ if [ -n "$nosaves" ]; then
   racfg "savestate_auto_save = \"false\"" "$HOME/retroarch.cfg" "$rcache/current"
 fi
 
+# RetroArch writes a core-resolution screenshot on request, without the black bars of a framebuffer grab
+if [ -n "$screenshot" ] && [ -z "$nosaves" ]; then
+  mkdir -p "$rcache/shots"
+  racfg "network_cmd_enable = \"true\"" "$HOME/retroarch.cfg" "$rcache/current"
+  racfg "network_cmd_bind_address = \"127.0.0.1\"" "$HOME/retroarch.cfg" "$rcache/current"
+  racfg "screenshot_directory = \"$rcache/shots\"" "$HOME/retroarch.cfg" "$rcache/current"
+  racfg "video_gpu_screenshot = \"false\"" "$HOME/retroarch.cfg" "$rcache/current"
+  racfg "notification_show_screenshot = \"false\"" "$HOME/retroarch.cfg" "$rcache/current"
+fi
+
 # Modifying overlays .cfg files to point to current border
 [ -n "$frame" ] && ! grep -q "\"$frame.png\"" "$HOME/overlay/border.cfg" && racfg "overlay0_overlay = \"$frame.png\"" "$HOME/overlay/border.cfg"
 [ -n "$frame" ] && ! grep -q "\"$frame.png\"" "$HOME/overlay/border_with_scanlines.cfg" && racfg "overlay0_desc0_overlay = \"$frame.png\"" "$HOME/overlay/border_with_scanlines.cfg"
@@ -328,6 +338,24 @@ ts="$(date +%s)"
 tm="0"
 [ -f "$timefile_load" ] && tm="$(cat "$timefile_load")"
 
+# The framebuffer is cleared while RetroArch shuts down, so take the screenshot before the kill
+grabScreenshot() {
+  [ -n "$screenshot" ] && [ -z "$nosaves" ] && [ ! -f "$rcache/sshot_taken" ] || return 0
+  local i
+  rm -f "$rcache"/shots/*.png
+  printf SCREENSHOT | nc -u -w1 127.0.0.1 55355
+  for i in 1 2 3 4 5 6 7 8 9 10; do
+    set -- "$rcache"/shots/*.png
+    if [ -f "$1" ]; then
+      usleep 200000
+      mv -f "$1" "$screenshot" && : > "$rcache/sshot_taken" && return 0
+    fi
+    usleep 200000
+  done
+  fbgrab -a -z 1 "$screenshot" && : > "$rcache/sshot_taken"
+}
+rm -f "$rcache/sshot_taken"
+
 # Starting RetroArch
 if [ -z "$debug" ]; then
   retroarch -c "$HOME/retroarch.cfg" -vfL "$core" "$rom" ${extra:+"$extra"} &
@@ -340,7 +368,7 @@ rpid="$!"
 if [ -z "$demo" ]; then
   retroarch_watchdog --pid "$rpid" | while read -r _ button value _; do
     case "$button $value" in
-      "home 1"|"reset 1"|"power 0") kill "$rpid" ;;
+      "home 1"|"reset 1"|"power 0") grabScreenshot; kill "$rpid" ;;
     esac
   done
 else
@@ -349,13 +377,13 @@ else
   sleep_pid="$(pgrep -P "$!")"
   retroarch_watchdog --any --pid "$rpid" | while read -r _ button value _; do
     case "$button $value" in
-      "any 1"|"reset 1"|"power 0") kill -9 "$sleep_pid" && kill "$rpid" ;;
+      "any 1"|"reset 1"|"power 0") grabScreenshot; kill -9 "$sleep_pid" && kill "$rpid" ;;
     esac
   done
 fi
 
-# Screenshot! It's not so fast, doing it in a background...
-if [ -n "$screenshot" ] && [ -z "$nosaves" ]; then
+# Fallback when RetroArch quit on its own and nothing was grabbed before
+if [ -n "$screenshot" ] && [ -z "$nosaves" ] && [ ! -f "$rcache/sshot_taken" ]; then
   fbgrab -a -z 1 "$screenshot" &
   sshot_pid="$!"
 fi
