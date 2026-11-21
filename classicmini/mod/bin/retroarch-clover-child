@@ -364,6 +364,26 @@ else
 fi
 rpid="$!"
 
+# The save lives in RAM while RetroArch runs, so copy it to the game's save folder as it changes
+syncSram() {
+  [ -f "$rsram" ] || return 0
+  cmp -s "$rsram" "$sram" && return 0
+  if cp -f "$rsram" "$sram.tmp" && mv -f "$sram.tmp" "$sram"; then
+    sync
+  else
+    rm -f "$sram.tmp"
+  fi
+}
+if [ -n "$sram" ] && [ -z "$demo" ]; then
+  mkfifo "$rcache/sram_events"
+  inotifyd - "$rcache:wy" > "$rcache/sram_events" &
+  sram_watch_pid="$!"
+  while read -r _ _ name; do
+    [ "$name" = "${rsram##*/}" ] && syncSram
+  done < "$rcache/sram_events" &
+  sram_sync_pid="$!"
+fi
+
 # Starting watchdog
 if [ -z "$demo" ]; then
   retroarch_watchdog --pid "$rpid" | while read -r _ button value _; do
@@ -390,6 +410,10 @@ fi
 
 # Moving suspend point to volatile folder for the console UI
 wait "$rpid"
+if [ -n "$sram_sync_pid" ]; then
+  kill "$sram_watch_pid" "$sram_sync_pid" 2> /dev/null
+  wait "$sram_watch_pid" "$sram_sync_pid" 2> /dev/null
+fi
 if [ -n "$save" ] && [ -f "$autosave" ] && [ -z "$nosaves" ]; then
   gzip -f "$autosave" && mv -f "$autosave.gz" "$save"
   ts2="$(date +%s)"
