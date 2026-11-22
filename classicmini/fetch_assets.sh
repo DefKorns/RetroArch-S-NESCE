@@ -56,3 +56,5 @@ input_r_y_plus_axis = "+4"
 input_r_y_minus_axis = "-4"
 EOF
 done
+# upstream puts the MD Mini 2 pad D-pad on the wrong axes and has no profile for the Retro-bit 6B USB pad
+cp "$(dirname "$0")"/autoconfig_overrides/*.cfg "$dest/joypad_autoconf/udev/"
