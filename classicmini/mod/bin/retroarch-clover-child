@@ -341,16 +341,19 @@ tm="0"
 # The framebuffer is cleared while RetroArch shuts down, so take the screenshot before the kill
 grabScreenshot() {
   [ -n "$screenshot" ] && [ -z "$nosaves" ] && [ ! -f "$rcache/sshot_taken" ] || return 0
-  local i
+  local i size prev=
   rm -f "$rcache"/shots/*.png
-  printf SCREENSHOT | nc -u -w1 127.0.0.1 55355
-  for i in 1 2 3 4 5 6 7 8 9 10; do
+  printf SCREENSHOT | nc -u -w1 127.0.0.1 55355 &
+  for i in $(seq 1 40); do
     set -- "$rcache"/shots/*.png
     if [ -f "$1" ]; then
-      usleep 200000
-      mv -f "$1" "$screenshot" && : > "$rcache/sshot_taken" && return 0
+      size=$(wc -c < "$1")
+      if [ "$size" -gt 0 ] && [ "$size" = "$prev" ]; then
+        mv -f "$1" "$screenshot" && : > "$rcache/sshot_taken" && return 0
+      fi
+      prev=$size
     fi
-    usleep 200000
+    usleep 50000
   done
   fbgrab -a -z 1 "$screenshot" && : > "$rcache/sshot_taken"
 }
