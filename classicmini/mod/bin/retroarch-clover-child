@@ -43,15 +43,6 @@ game_path="$(dirname "$rom")"
 filename="$(basename "$rom")"
 id="${filename%.*}"
 extension="${filename##*.}"
-if [ "$(head -c 6 "$core" 2> /dev/null | od -An -tx1 | tr -d ' \n')" = "fd377a585a00" ]; then
-  mkdir -p "$rcache"
-  xz -dc "$core" > "$rcache/${1}_libretro.so.tmp" || {
-    rm -f "$rcache/${1}_libretro.so.tmp"
-    abortLaunch
-  }
-  mv -f "$rcache/${1}_libretro.so.tmp" "$rcache/${1}_libretro.so"
-  core="$rcache/${1}_libretro.so"
-fi
 autosave="$rcache/$id.state.auto"
 usb_states="/media/$modname/retroarch/states"
 rsram="$rcache/$id.srm"

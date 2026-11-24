@@ -73,6 +73,12 @@ typedef void (*function_t)(void);
  **/
 dylib_t dylib_load(const char *path);
 
+#ifdef HAVE_CLASSIC
+int dylib_xz_is_compressed(const char *path);
+
+dylib_t dylib_xz_load(const char *path);
+#endif
+
 /**
  * Frees the resources associated with a dynamic library.
  *

@@ -151,7 +151,12 @@ dylib_t dylib_load(const char *path)
     else
         lib = dlopen(path, RTLD_LAZY | RTLD_LOCAL);
 #else
-   dylib_t lib = dlopen(path, RTLD_LAZY | RTLD_LOCAL);
+   dylib_t lib;
+#ifdef HAVE_CLASSIC
+   if (dylib_xz_is_compressed(path))
+      return dylib_xz_load(path);
+#endif
+   lib = dlopen(path, RTLD_LAZY | RTLD_LOCAL);
 #endif
    return lib;
 }

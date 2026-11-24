@@ -3229,6 +3229,11 @@ endif
 
 ifeq ($(HAVE_CLASSIC), 1)
   DEFINES += -DHAVE_CLASSIC
+  OBJ += $(LIBRETRO_COMM_DIR)/dynamic/dylib_xz.o \
+         deps/xz-embedded/xz_crc32.o \
+         deps/xz-embedded/xz_crc64.o \
+         deps/xz-embedded/xz_dec_lzma2.o \
+         deps/xz-embedded/xz_dec_stream.o
 endif
 
 ifeq ($(HAVE_C_A7A7), 1)
