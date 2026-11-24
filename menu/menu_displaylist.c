@@ -10228,8 +10228,10 @@ unsigned menu_displaylist_build_list(
                {MENU_ENUM_LABEL_INPUT_TURBO_FIRE_SETTINGS,             PARSE_ACTION,     true},
                {MENU_ENUM_LABEL_INPUT_HOTKEY_BINDS,                    PARSE_ACTION,     true},
                {MENU_ENUM_LABEL_INPUT_MENU_SETTINGS,                   PARSE_ACTION,     true},
+#ifndef HAVE_CLASSIC
                {MENU_ENUM_LABEL_INPUT_SENSOR_SETTINGS,                 PARSE_ACTION,     true},
                {MENU_ENUM_LABEL_INPUT_HAPTIC_FEEDBACK_SETTINGS,        PARSE_ACTION,     true},
+#endif
                {MENU_ENUM_LABEL_INPUT_MAX_USERS,                       PARSE_ONLY_UINT,  true},
                {MENU_ENUM_LABEL_CONFIRM_QUIT,                          PARSE_ONLY_BOOL,  true},
                {MENU_ENUM_LABEL_CONFIRM_CLOSE,                         PARSE_ONLY_BOOL,  true},
@@ -10261,15 +10263,19 @@ unsigned menu_displaylist_build_list(
 #if defined(GEKKO)
                {MENU_ENUM_LABEL_INPUT_MOUSE_SCALE,                     PARSE_ONLY_UINT,  true},
 #endif
+#ifndef HAVE_CLASSIC
                {MENU_ENUM_LABEL_INPUT_TOUCH_ENABLE,                    PARSE_ONLY_BOOL,  true},
                {MENU_ENUM_LABEL_INPUT_PREFER_FRONT_TOUCH,              PARSE_ONLY_BOOL,  true},
                {MENU_ENUM_LABEL_INPUT_TOUCH_SCALE,                     PARSE_ONLY_UINT,  true},
+#endif
 #ifdef UDEV_TOUCH_SUPPORT
+#ifndef HAVE_CLASSIC
                {MENU_ENUM_LABEL_INPUT_TOUCH_VMOUSE_POINTER,            PARSE_ONLY_BOOL,  true},
                {MENU_ENUM_LABEL_INPUT_TOUCH_VMOUSE_MOUSE,              PARSE_ONLY_BOOL,  true},
                {MENU_ENUM_LABEL_INPUT_TOUCH_VMOUSE_TOUCHPAD,           PARSE_ONLY_BOOL,  true},
                {MENU_ENUM_LABEL_INPUT_TOUCH_VMOUSE_TRACKBALL,          PARSE_ONLY_BOOL,  true},
                {MENU_ENUM_LABEL_INPUT_TOUCH_VMOUSE_GESTURE,            PARSE_ONLY_BOOL,  true},
+#endif
 #endif
                {MENU_ENUM_LABEL_INPUT_BIND_TIMEOUT,                    PARSE_ONLY_UINT,  true},
                {MENU_ENUM_LABEL_INPUT_BIND_HOLD,                       PARSE_ONLY_UINT,  true},
@@ -10355,7 +10361,9 @@ unsigned menu_displaylist_build_list(
             static menu_displaylist_build_info_selective_t build_list[] = {
                {MENU_ENUM_LABEL_ACCESSIBILITY_ENABLED,               PARSE_ONLY_BOOL, true },
                {MENU_ENUM_LABEL_ACCESSIBILITY_NARRATOR_SPEECH_SPEED, PARSE_ONLY_UINT, false },
+#ifndef HAVE_CLASSIC
                {MENU_ENUM_LABEL_AI_SERVICE_SETTINGS,                 PARSE_ACTION,    true },
+#endif
             };
 
             for (i = 0; i < ARRAY_SIZE(build_list); i++)
