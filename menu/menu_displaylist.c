@@ -9928,11 +9928,13 @@ unsigned menu_displaylist_build_list(
       {
          static menu_displaylist_build_info_selective_t build_list[] = {
             {MENU_ENUM_LABEL_AUDIO_OUTPUT_SETTINGS,           PARSE_ACTION,     true },
-#ifdef HAVE_MICROPHONE
+#if defined(HAVE_MICROPHONE) && !defined(HAVE_CLASSIC)
             {MENU_ENUM_LABEL_MICROPHONE_SETTINGS,             PARSE_ACTION,     true },
 #endif
             {MENU_ENUM_LABEL_AUDIO_SYNCHRONIZATION_SETTINGS,  PARSE_ACTION,     true },
+#ifndef HAVE_CLASSIC
             {MENU_ENUM_LABEL_MIDI_SETTINGS,                   PARSE_ACTION,     true },
+#endif
 #if defined(HAVE_AUDIOMIXER)
             {MENU_ENUM_LABEL_AUDIO_MIXER_SETTINGS,            PARSE_ACTION,     true },
 #endif
@@ -9983,9 +9985,11 @@ unsigned menu_displaylist_build_list(
                   { MENU_ENUM_LABEL_VIDEO_OUTPUT_SETTINGS, PARSE_ACTION, false },
                   { MENU_ENUM_LABEL_VIDEO_SCALING_SETTINGS, PARSE_ACTION, false },
                   { MENU_ENUM_LABEL_VIDEO_SYNCHRONIZATION_SETTINGS, PARSE_ACTION, false },
+#ifndef HAVE_CLASSIC
                   { MENU_ENUM_LABEL_VIDEO_FULLSCREEN_MODE_SETTINGS, PARSE_ACTION, false },
                   { MENU_ENUM_LABEL_VIDEO_WINDOWED_MODE_SETTINGS, PARSE_ACTION, false },
                   { MENU_ENUM_LABEL_VIDEO_HDR_SETTINGS, PARSE_ACTION, false },
+#endif
                   { MENU_ENUM_LABEL_VIDEO_STEREO_SETTINGS, PARSE_ACTION, false },
                };
                count += menu_displaylist_parse_settings_rows(list, settings,
@@ -13791,8 +13795,10 @@ unsigned menu_displaylist_build_list(
                {MENU_ENUM_LABEL_PLAYLIST_SETTINGS,           PARSE_ACTION, true},
                {MENU_ENUM_LABEL_CORE_SETTINGS,               PARSE_ACTION, true},
                {MENU_ENUM_LABEL_SAVING_SETTINGS,             PARSE_ACTION, true},
+#ifndef HAVE_CLASSIC
                {MENU_ENUM_LABEL_RECORDING_SETTINGS,          PARSE_ACTION, true},
-               {MENU_ENUM_LABEL_CONFIGURATION_SETTINGS,      PARSE_ACTION, true},
+#endif
+               {MENU_ENUM_LABEL_CONFIGURATION_SETTINGS,     PARSE_ACTION, true},
                {MENU_ENUM_LABEL_ACCESSIBILITY_SETTINGS,      PARSE_ACTION, true},
                {MENU_ENUM_LABEL_POWER_MANAGEMENT_SETTINGS,   PARSE_ACTION, true},
                {MENU_ENUM_LABEL_BLUETOOTH_SETTINGS,          PARSE_ACTION, true},
@@ -14276,13 +14282,15 @@ unsigned menu_displaylist_build_list(
                {MENU_ENUM_LABEL_MENU_DRIVER,           PARSE_ONLY_STRING_OPTIONS},
                {MENU_ENUM_LABEL_VIDEO_DRIVER,          PARSE_ONLY_STRING_OPTIONS},
                {MENU_ENUM_LABEL_AUDIO_DRIVER,          PARSE_ONLY_STRING_OPTIONS},
-#ifdef HAVE_MICROPHONE
+#if defined(HAVE_MICROPHONE) && !defined(HAVE_CLASSIC)
                {MENU_ENUM_LABEL_MICROPHONE_DRIVER,     PARSE_ONLY_STRING_OPTIONS},
 #endif
                {MENU_ENUM_LABEL_INPUT_DRIVER,          PARSE_ONLY_STRING_OPTIONS},
                {MENU_ENUM_LABEL_JOYPAD_DRIVER,         PARSE_ONLY_STRING_OPTIONS},
+#ifndef HAVE_CLASSIC
                {MENU_ENUM_LABEL_RECORD_DRIVER,         PARSE_ONLY_STRING_OPTIONS},
                {MENU_ENUM_LABEL_MIDI_DRIVER,           PARSE_ONLY_STRING_OPTIONS},
+#endif
 #ifdef HAVE_COMPANION_WIMP
                {MENU_ENUM_LABEL_UI_COMPANION_DRIVER,   PARSE_ONLY_STRING_OPTIONS},
 #endif
@@ -14292,8 +14300,10 @@ unsigned menu_displaylist_build_list(
 #if defined(HAVE_LAKKA) || defined(HAVE_WIFI)
                {MENU_ENUM_LABEL_WIFI_DRIVER,           PARSE_ONLY_STRING_OPTIONS},
 #endif
+#ifndef HAVE_CLASSIC
                {MENU_ENUM_LABEL_CAMERA_DRIVER,         PARSE_ONLY_STRING_OPTIONS},
                {MENU_ENUM_LABEL_LOCATION_DRIVER,       PARSE_ONLY_STRING_OPTIONS},
+#endif
 #if defined(HAVE_RSLC) && defined(HAVE_GLSLANG)
                {MENU_ENUM_LABEL_VIDEO_SHADER_COMPILER, PARSE_ONLY_UINT},
 #endif
