@@ -2,6 +2,8 @@
 [ -f "$mountpoint/usr/bin/clover-kachikachi" ] && overmount /usr/bin/clover-kachikachi
 [ -f "$mountpoint/usr/bin/clover-canoe-shvc" ] && overmount /usr/bin/clover-canoe-shvc
 
+mkdir -p "$mountpoint/var/cache/retroarch"
+
 for i in system overlay database playlists system thumbnails; do
   mkdir -p "$mountpoint/etc/libretro/$i"
   [ -d "$mountpoint/media/$modname/retroarch/$i" ] && mount -t overlayfs -o "lowerdir=$mountpoint/etc/libretro/$i,upperdir=$mountpoint/media/$modname/retroarch/$i" overlayfs "$mountpoint/etc/libretro/$i"
