@@ -11,7 +11,7 @@ rom-size:
 cfg-diff:
 --- /tmp/cfg_orig
 +++ /etc/libretro/retroarch.cfg
-@@ -225,7 +225,7 @@
+@@ -226,7 +226,7 @@
  stdin_cmd_enable = "false"
  block_sram_overwrite = "false"
  savestate_auto_index = "false"

@@ -8,8 +8,39 @@ retroarch -c /etc/libretro/retroarch.cfg -vfL /etc/libretro/core/snes9x2005_libr
 core-content: FAKE-CORE-snes9x2005
 rom-size: 3
 cfg-diff:
+--- /tmp/cfg_orig
++++ /etc/libretro/retroarch.cfg
+@@ -28,7 +28,7 @@
+ rgui_browser_directory = "/"
+ rgui_config_directory = "~/config"
+ overlay_directory = "~/overlay"
+-screenshot_directory = "~/screenshots"
++screenshot_directory = "/var/cache/retroarch/shots"
+ video_driver = "gl"
+ record_driver = "null"
+ camera_driver = "null"
+@@ -192,7 +192,7 @@
+ video_black_frame_insertion = "false"
+ video_disable_composition = "false"
+ pause_nonactive = "true"
+-video_gpu_screenshot = "true"
++video_gpu_screenshot = "false"
+ video_post_filter_record = "false"
+ keyboard_gamepad_enable = "true"
+ core_set_supports_no_game_enable = "true"
+@@ -222,7 +222,7 @@
+ input_overlay_enable = "false"
+ input_overlay_enable_autopreferred = "true"
+ input_overlay_hide_in_menu = "true"
+-network_cmd_enable = "false"
++network_cmd_enable = "true"
+ stdin_cmd_enable = "false"
+ block_sram_overwrite = "false"
+ savestate_auto_index = "false"
 overlay-diff:
 files:
+  F /var/cache/retroarch/current
+  F /var/cache/retroarch/shots
 ## watchdog
 watchdog --pid PID
 ## fbgrab

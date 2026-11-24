@@ -13,6 +13,7 @@ cfg-diff:
 overlay-diff:
 files:
   F /var/cache/retroarch/game.sav
+  F /var/cache/retroarch/sram_events
 ## watchdog
 watchdog --pid PID
 ## fbgrab

@@ -15,6 +15,7 @@ cfg-diff:
 overlay-diff:
 files:
   F /tmp/rom/ActRaiser_2.sfrom.sfc
+  F /var/cache/retroarch/sram_events
 ## watchdog
 watchdog --pid PID
 ## fbgrab

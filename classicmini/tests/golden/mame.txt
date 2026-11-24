@@ -16,6 +16,7 @@ overlay-diff:
 files:
   F /var/cache/retroarch/mame2003
   F /var/cache/retroarch/mame2003/nv
+  F /var/cache/retroarch/sram_events
 ## watchdog
 watchdog --pid PID
 ## fbgrab

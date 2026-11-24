@@ -12,6 +12,7 @@ rom-size: 3
 cfg-diff:
 overlay-diff:
 files:
+  F /var/cache/retroarch/sram_events
 ## watchdog
 watchdog --pid PID
 ## fbgrab

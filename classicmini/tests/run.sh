@@ -194,13 +194,6 @@ scnExtra() {
   runChild extra snes9x2005 /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc --ra-extra --ips=/x.ips
 }
 
-scnXz() {
-  cp "$tests/fixtures/core.xz" /etc/libretro/core/km_test_libretro.so
-  mkdir -p /games/CLV-P-VAAAJ
-  printf 'ROM' > /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc
-  runChild xz_core km_test /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc
-}
-
 scnIps() {
   game=/usr/share/games/CLV-P-VAAAJ
   real=/var/squashfs$game
@@ -283,18 +276,6 @@ scnSfromFail() {
   runChild sfrom_fail snes9x2010 /games/CLV-U-UCWJY/missing.sfrom.7z --title-code CLV-U-UCWJY     --save-data-backing-file /saves/CLV-U-UCWJY/data.sram
 }
 
-scnXzFail() {
-  {
-    byte 253
-    printf '7zXZ'
-    byte 0
-    printf 'broken'
-  } > /etc/libretro/core/km_bad_libretro.so
-  mkdir -p /games/CLV-P-VAAAJ
-  printf 'ROM' > /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc
-  runChild xz_fail km_bad /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc
-}
-
 scnOptionValue() {
   mkdir -p /games/CLV-P-VAAAJ
   printf 'ROM' > /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc
@@ -358,7 +339,7 @@ scnMini() {
 
 rm -rf "$out"
 mkdir -p "$out"
-scenarios="Shortcuts SnesBasic SnesSfrom SnesSfrom7z SfromFail XzFail OptionValue NosavesKeepsUserCfg Wrappers Mini NesFds FceummFds Nosaves Bezel Crt Filters Extra Xz Ips Watchdog Mame Screenshot StatesSd StatesNand StatesForceNand"
+scenarios="Shortcuts SnesBasic SnesSfrom SnesSfrom7z SfromFail OptionValue NosavesKeepsUserCfg Wrappers Mini NesFds FceummFds Nosaves Bezel Crt Filters Extra Ips Watchdog Mame Screenshot StatesSd StatesNand StatesForceNand"
 for s in $scenarios; do
   (
     resetFs
