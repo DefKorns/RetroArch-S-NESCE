@@ -22,7 +22,7 @@ jobs:
   hmod:
     needs: tests
     # Keep in sync with the vendor/hmod-build submodule tag.
-    uses: DefKorns/hmod-build/.github/workflows/hmod.yml@v1.8.1
+    uses: DefKorns/hmod-build/.github/workflows/hmod.yml@v1.10.1
     with:
       release-name: RetroArch (S)NESCE
       make: -f Makefile.hmod hmod
