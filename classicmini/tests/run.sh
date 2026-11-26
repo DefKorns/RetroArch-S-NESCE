@@ -289,6 +289,15 @@ scnNosavesKeepsUserCfg() {
   runChild nosaves_keeps_user_cfg snes9x2005 /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc --ra-nosaves
 }
 
+scnInterruptedRestore() {
+  mkdir -p /games/CLV-P-VAAAJ
+  printf 'ROM' > /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc
+  grep -E '^(savestate_auto_save|video_smooth) ' /etc/libretro/retroarch.cfg > /etc/libretro/retroarch.cfg.restore
+  sed -i -e 's/^savestate_auto_save .*/savestate_auto_save = "false"/'     -e 's/^video_smooth .*/video_smooth = "true"/' /etc/libretro/retroarch.cfg
+  runChild interrupted_restore snes9x2005 /games/CLV-P-VAAAJ/CLV-P-VAAAJ.sfc
+  ls /etc/libretro/retroarch.cfg.restore >> "$out/interrupted_restore.txt" 2>&1
+}
+
 # the launchers write /var/exec.flag when /bin/remote-exec exists; run it with a child that prints its arguments
 scnWrappers() {
   mkdir -p /wrap
@@ -339,7 +348,7 @@ scnMini() {
 
 rm -rf "$out"
 mkdir -p "$out"
-scenarios="Shortcuts SnesBasic SnesSfrom SnesSfrom7z SfromFail OptionValue NosavesKeepsUserCfg Wrappers Mini NesFds FceummFds Nosaves Bezel Crt Filters Extra Ips Watchdog Mame Screenshot StatesSd StatesNand StatesForceNand"
+scenarios="Shortcuts SnesBasic SnesSfrom SnesSfrom7z SfromFail OptionValue NosavesKeepsUserCfg Wrappers Mini NesFds FceummFds Nosaves Bezel Crt Filters Extra Ips Watchdog Mame Screenshot StatesSd StatesNand StatesForceNand InterruptedRestore"
 for s in $scenarios; do
   (
     resetFs

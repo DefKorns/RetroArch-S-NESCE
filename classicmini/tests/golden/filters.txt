@@ -30,7 +30,6 @@ cfg-diff:
  resampler_directory = ""
 overlay-diff:
 files:
-  F /var/cache/retroarch/current
 ## watchdog
 watchdog --pid PID
 ## fbgrab

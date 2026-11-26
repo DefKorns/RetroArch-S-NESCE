@@ -23,7 +23,6 @@ cfg-diff:
  playlist_entry_remove = "true"
 overlay-diff:
 files:
-  F /var/cache/retroarch/current
 ## watchdog
 watchdog --pid PID
 ## fbgrab

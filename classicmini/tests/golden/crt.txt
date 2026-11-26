@@ -30,7 +30,6 @@ cfg-diff:
  network_cmd_enable = "false"
 overlay-diff:
 files:
-  F /var/cache/retroarch/current
 ## watchdog
 watchdog --pid PID
 ## fbgrab

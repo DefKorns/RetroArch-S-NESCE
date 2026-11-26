@@ -21,7 +21,6 @@ cfg-diff:
  history_list_enable = "true"
 overlay-diff:
 files:
-  F /var/cache/retroarch/current
 ## watchdog
 watchdog --pid PID
 ## fbgrab

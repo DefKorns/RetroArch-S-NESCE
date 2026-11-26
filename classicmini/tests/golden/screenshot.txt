@@ -39,7 +39,6 @@ cfg-diff:
  savestate_auto_index = "false"
 overlay-diff:
 files:
-  F /var/cache/retroarch/current
   F /var/cache/retroarch/shots
 ## watchdog
 watchdog --pid PID
